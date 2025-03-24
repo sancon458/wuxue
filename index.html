@@ -626,7 +626,7 @@
                 html += `
                 <div class="mb-4">
                     <h5>技能基础数据</h5>
-                    <pre style="max-height: 300px; overflow-y: auto;">${JSON.stringify(baseSkill, null, 2)}</pre>
+                    <pre style="max-height: 200px; overflow-y: auto;">${JSON.stringify(baseSkill, null, 2)}</pre>
                 </div>`;
 
                 // 如果有多个重数，显示差异
@@ -638,6 +638,10 @@
                             <table class="table table-sm table-hover">
                                 <thead>
                                     <tr>
+                                        <th>技能效果</th>
+                                        <th>${baseSkill.desc}</th>
+                                    </tr>
+                                    <tr>
                                         <th>重数</th>
                                         <th>差异属性</th>
                                     </tr>
@@ -645,7 +649,7 @@
                                 <tbody>`;
 
                     allSkills.forEach((skill, index) => {
-                        if (index === 0) return; // 跳过第一重
+                        // if (index === 0) return; // 跳过第一重
                         const differences = findDifferences(baseSkill, skill.data);
                         const diffText = Object.entries(differences)
                             .map(([key, value]) => {
@@ -659,7 +663,9 @@
                         if (diffText) {
                             html += `
                             <tr>
-                                <td>第${skill.level}重</td>
+                                <td>第${skill.level}重
+                                    
+                                </td>
                                 <td>${diffText}</td>
                             </tr>`;
                         }
@@ -767,13 +773,13 @@
                     content += '<div class="mt-3">';
                     
                     // 武学等级
-                    if (skill.wxlevel) {
-                        content += `
-                        <div class="attribute-row">
-                            <span class="attribute-label">武学等级：</span>
-                            <span class="attribute-value">${skill.wxlevel}</span>
-                        </div>`;
-                    }
+                    // if (skill.wxlevel) {
+                    //     content += `
+                    //     <div class="attribute-row">
+                    //         <span class="attribute-label">武学等级：</span>
+                    //         <span class="attribute-value">${skill.wxlevel}</span>
+                    //     </div>`;
+                    // }
                     
                     // 潜能效率
                     if (skill.potEfficiency) {
@@ -788,16 +794,43 @@
                     if (skill.atk) {
                         content += `
                         <div class="attribute-row">
-                            <span class="attribute-label">攻击：</span>
+                            <span class="attribute-label">攻击力系数：</span>
                             <span class="attribute-value">${skill.atk}</span>
                         </div>`;
                     }
                     
+                    // damRate
+                    if (skill.damRate) {
+                        content += `
+                        <div class="attribute-row">
+                            <span class="attribute-label">伤害率系数：</span>
+                            <span class="attribute-value">${skill.damRate}</span>
+                        </div>`;
+                    }
+                    
+                    // powerAtkRate
+                    if (skill.powerAtkRate) {
+                        content += `
+                        <div class="attribute-row">
+                            <span class="attribute-label">加力攻击系数：</span>
+                            <span class="attribute-value">${skill.powerAtkRate}</span>
+                        </div>`;
+                    }
+
+                    // powerDamRate
+                    if (skill.powerDamRate) {
+                        content += `
+                        <div class="attribute-row">
+                            <span class="attribute-label">加力伤害系数：</span>
+                            <span class="attribute-value">${skill.powerDamRate}</span>
+                        </div>`;
+                    }
+
                     // 防御
                     if (skill.def) {
                         content += `
                         <div class="attribute-row">
-                            <span class="attribute-label">防御：</span>
+                            <span class="attribute-label">防御系数：</span>
                             <span class="attribute-value">${skill.def}</span>
                         </div>`;
                     }
@@ -806,7 +839,7 @@
                     if (skill.parry) {
                         content += `
                         <div class="attribute-row">
-                            <span class="attribute-label">招架：</span>
+                            <span class="attribute-label">招架系数：</span>
                             <span class="attribute-value">${skill.parry}</span>
                         </div>`;
                     }
@@ -815,7 +848,7 @@
                     if (skill.hitRate) {
                         content += `
                         <div class="attribute-row">
-                            <span class="attribute-label">命中：</span>
+                            <span class="attribute-label">命中率系数：</span>
                             <span class="attribute-value">${skill.hitRate}</span>
                         </div>`;
                     }
@@ -824,20 +857,41 @@
                     if (skill.dodge) {
                         content += `
                         <div class="attribute-row">
-                            <span class="attribute-label">闪避：</span>
+                            <span class="attribute-label">闪避系数：</span>
                             <span class="attribute-value">${skill.dodge}</span>
                         </div>`;
                     }
                     
+                    // 攻速
+                    if (skill.atkSpd) {
+                        content += `
+                        <div class="attribute-row">
+                            <span class="attribute-label">攻速系数：</span>
+                            <span class="attribute-value">${skill.atkSpd}</span>
+                        </div>`;
+                    }
+
                     // 内力
                     if (skill.neili) {
                         content += `
                         <div class="attribute-row">
-                            <span class="attribute-label">内力：</span>
+                            <span class="attribute-label">内力系数：</span>
                             <span class="attribute-value">${skill.neili}</span>
                         </div>`;
                     }
                     
+                    // 生命
+                    if (skill.HpRate) {
+                        content += `
+                        <div class="attribute-row">
+                            <span class="attribute-label">生命系数：</span>
+                            <span class="attribute-value">${skill.HpRate}</span>
+                        </div>`;
+                    }
+
+                    
+
+
                     content += '</div>';
                     
                     cardBody.innerHTML = content;
