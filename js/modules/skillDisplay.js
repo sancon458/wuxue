@@ -181,6 +181,7 @@ export function showActiveSkills(skillId, activeSkillData) {
     
     if (skillGroups.length === 0) {
         container.innerHTML = '<div class="alert alert-info">该武学没有关联的主动技能。</div>';
+        return;
     }
 
     let html = '';
@@ -203,7 +204,15 @@ export function showActiveSkills(skillId, activeSkillData) {
             <pre style="max-height: 200px; overflow-y: auto;">${JSON.stringify(baseSkill, null, 2)}</pre>
         </div>`;
 
-        if (allSkills.length > 1) {
+        // 根据技能ID格式筛选第一重和第十重
+        const selectedSkills = allSkills.filter(skill => {
+            const skillId = skill.id;
+            const isLevel1 = /^[a-zA-Z]+$/.test(skillId);
+            const isLevel10 = /^[a-zA-Z]+10$/.test(skillId);
+            return isLevel1 || isLevel10;
+        });
+
+        if (selectedSkills.length > 1) {
             html += `
             <div>
                 <h5>各重数差异</h5>
@@ -216,14 +225,14 @@ export function showActiveSkills(skillId, activeSkillData) {
                             </tr>
                             <tr>
                                 <th>重数</th>
-                                <th>差异属性</th>
+                                <th>属性</th>
                             </tr>
                         </thead>
                         <tbody>`;
 
-            allSkills.forEach((skill, index) => {
-                const differences = findDifferences(baseSkill, skill.data);
-                const diffText = Object.entries(differences)
+            selectedSkills.forEach((skill, index) => {
+                const skillText = Object.entries(skill.data)
+                    .filter(([key, value]) => ['pvpcd', 'cost', 'effects'].includes(key))
                     .map(([key, value]) => {
                         if (key === 'effects') {
                             return `${key}: ${createEffectLinks(value)}`;
@@ -231,14 +240,12 @@ export function showActiveSkills(skillId, activeSkillData) {
                         return `${key}: ${value}`;
                     })
                     .join('<br>');
-                
-                if (diffText) {
+
+                if (skillText) {
                     html += `
                     <tr>
-                        <td>第${skill.level}重
-                            
-                        </td>
-                        <td>${diffText}</td>
+                        <td>第${skill.level}重</td>
+                        <td>${skillText}</td>
                     </tr>`;
                 }
             });
@@ -316,7 +323,7 @@ export function updateSkillList(skillData, matchesFilters) {
             
             if (skill.dsc) {
                 const shortDesc = skill.dsc.replace(/HIW|NOR/g, '').split('\\n')[0];
-                content += `<p class="skill-description" style="max-height: 3.6em; overflow: hidden;">${shortDesc}</p>`;
+                content += `<p class="skill-description" style="max-height: 3.6em; overflow-y: auto;">${shortDesc}</p>`;
             }
             
             if (skill.familyList) {
