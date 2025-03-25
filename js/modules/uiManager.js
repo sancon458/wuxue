@@ -1,5 +1,7 @@
 // UI管理模块
 import { activeSkillData } from './dataLoader.js';
+import { updateSkillList } from './skillDisplay.js'; // 导入 updateSkillList 函数
+import { skillData } from '../script.js'; // 导入 skillData
 
 // 模态窗口管理器
 export const modalManager = {
@@ -92,7 +94,7 @@ export function createFilterBadges(containerId, values, filterType) {
         const badge = document.createElement('span');
         badge.className = 'badge bg-secondary filter-badge';
         badge.textContent = value;
-        badge.onclick = () => toggleFilter(badge, value, filterType);
+        badge.onclick = () => toggleFilter(badge, value, filterType); // 确保点击事件绑定正确
         container.appendChild(badge);
     });
 }
@@ -115,6 +117,7 @@ export function toggleFilter(badge, value, filterType) {
         activeFilters[filterType].add(value);
         badge.classList.add('active');
     }
+    updateSkillList(skillData, matchesFilters); // 确保切换过滤器状态后更新技能列表
 }
 
 // 检查技能是否匹配过滤条件

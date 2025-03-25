@@ -1,7 +1,10 @@
 // 主文件
-import { loadSkillData, getUniqueValues } from './modules/dataLoader.js';
+import { loadSkillData, loadSkillAutoData, getUniqueValues } from './modules/dataLoader.js';
 import { initModals, createFilterBadges, clearFilters, matchesFilters, updateStats } from './modules/uiManager.js';
 import { updateSkillList } from './modules/skillDisplay.js';
+
+// 导出 skillData
+export let skillData = null;
 
 // 初始化页面
 async function initializePage() {
@@ -10,7 +13,10 @@ async function initializePage() {
         initModals();
         
         // 加载技能数据
-        const skillData = await loadSkillData();
+        skillData = await loadSkillData();
+        
+        // 加载被动技能数据
+        const skillAutoData = await loadSkillAutoData();
         
         // 创建门派过滤器
         const families = getUniqueValues(skillData.skills, 'familyList');

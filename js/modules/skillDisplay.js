@@ -107,6 +107,73 @@ function findDifferences(obj1, obj2) {
     return differences;
 }
 
+// 显示被动技能信息
+export function showPassiveSkills(skillId, skillAutoData) {
+    const container = document.getElementById('passiveSkillsList'); // 修改为被动技能内容区域的ID
+    const passiveSkills = skillAutoData[skillId];
+    
+    if (!passiveSkills) {
+        container.innerHTML = '<div class="alert alert-info">该武学没有关联的被动技能。</div>';
+        return;
+    }
+
+    let html = '';
+    let totalAtk = 0;
+    let totalDuration = 0;
+    let count = 0;
+
+    Object.values(passiveSkills).forEach(skill => {
+        totalAtk += skill.atk || 0;
+        totalDuration += (skill.preDuration || 0) + (skill.aftDuration || 0);
+        count++;
+    });
+
+    const avgAtk = count > 0 ? (totalAtk / count).toFixed(2) : 0;
+    const avgDuration = count > 0 ? (totalDuration / count).toFixed(2) : 0;
+
+    html += `
+    <div class="mb-3">
+        <h4 class="text-primary">被动技能</h4>
+    </div>
+    <div class="mb-4">
+        <h5>技能基础数据</h5>
+        <p>招式平均攻击系数: ${avgAtk}</p>
+        <p>招式平均前后摇: ${avgDuration}</p>
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th>技能效果</th>
+                        <th>描述</th>
+                        <th>攻击系数</th>
+                        <th>伤害系数</th>
+                        <th>伤害类型</th>
+                        <th>解锁等级</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+    Object.values(passiveSkills).forEach(skill => {
+        html += `
+        <tr>
+            <td>${skill.skillText}</td>
+            <td>${skill.action}</td>
+            <td>${skill.atk || 0}</td>
+            <td>${skill.dam || 0}</td>
+            <td>${skill.damageType}</td>
+            <td>${skill.lv}</td>
+        </tr>`;
+    });
+
+    html += `
+                </tbody>
+            </table>
+        </div>
+    </div>`;
+
+    container.innerHTML = html;
+}
+
 // 显示主动技能信息
 export function showActiveSkills(skillId, activeSkillData) {
     const container = document.getElementById('activeSkillsList');
@@ -114,7 +181,6 @@ export function showActiveSkills(skillId, activeSkillData) {
     
     if (skillGroups.length === 0) {
         container.innerHTML = '<div class="alert alert-info">该武学没有关联的主动技能。</div>';
-        return;
     }
 
     let html = '';
@@ -225,10 +291,15 @@ export function updateSkillList(skillData, matchesFilters) {
                     const activeSkillData = await import('./dataLoader.js').then(module => module.loadActiveSkillData());
                     console.log('Loaded activeSkillData:', activeSkillData ? 'success' : 'null');
                     showActiveSkills(id, activeSkillData);
+                    
+                    // 加载被动技能数据
+                    const skillAutoData = await import('./dataLoader.js').then(module => module.loadSkillAutoData());
+                    console.log('Loaded skillAutoData:', skillAutoData ? 'success' : 'null');
+                    showPassiveSkills(id, skillAutoData);
                 } catch (error) {
-                    console.error('Error loading active skill data:', error);
+                    console.error('Error loading skill data:', error);
                     document.getElementById('activeSkillsList').innerHTML = 
-                        '<div class="alert alert-danger">加载主动技能数据时出错</div>';
+                        '<div class="alert alert-danger">加载技能数据时出错</div>';
                 }
                 
                 modal.show();

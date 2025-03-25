@@ -4,6 +4,7 @@ export let skillData = {
     "skills": {}
 };
 export let activeSkillData = null;
+export let skillAutoData = null;
 export let skillRelationData = null;
 
 // 从JSON文件加载数据
@@ -37,6 +38,24 @@ export async function loadActiveSkillData() {
         return data;
     } catch (error) {
         console.error('Error loading active skill data:', error);
+        return null;
+    }
+}
+
+// 加载被动技能数据
+export async function loadSkillAutoData() {
+    if (skillAutoData) return skillAutoData;
+    try {
+        console.log('Loading skillAuto.json');
+        const response = await fetch('data/skillAuto.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        skillAutoData = data;
+        return data;
+    } catch (error) {
+        console.error('Error loading skill auto data:', error);
         return null;
     }
 }
