@@ -79,12 +79,20 @@ export function initModals() {
 
         element.style.zIndex = modalManager.baseZIndex;
     });
+
+    // 添加“知识”类型的筛选按钮
+    // const knowledgeBadge = document.createElement('span');
+    // knowledgeBadge.className = 'badge bg-danger filter-badge';
+    // knowledgeBadge.textContent = '知识';
+    // knowledgeBadge.onclick = () => toggleFilter(knowledgeBadge, 'zhishi', 'zhishi');
+    // document.getElementById('familyFilters').appendChild(knowledgeBadge);
 }
 
 // 初始化过滤器状态
-export const activeFilters = {
+export const skillFilters = {
     family: new Set(),
-    isJueXue: false // 修正关键字为 isJueXue
+    isJueXue: false,
+    isZhiShi: false // 添加 isZhiShi 属性
 };
 
 // 创建过滤器标签
@@ -102,7 +110,7 @@ export function createFilterBadges(containerId, values, filterType) {
 
 // 清除过滤器
 export function clearFilters(filterType) {
-    activeFilters[filterType].clear();
+    skillFilters[filterType].clear();
     
     const containerId = filterType === 'family' ? 'familyFilters' : 'methodFilters';
     const badges = document.querySelectorAll(`#${containerId} .filter-badge`);
@@ -111,19 +119,22 @@ export function clearFilters(filterType) {
 
 // 切换过滤器状态
 export function toggleFilter(badge, value, filterType) {
-    if (filterType === 'juelue') {
-        activeFilters.isJueXue = !activeFilters.isJueXue; // 修正关键字为 isJueXue
+    if (filterType === 'juexue') {
+        skillFilters.isJueXue = !skillFilters.isJueXue;
+        badge.classList.toggle('active');
+    } else if (filterType === 'zhishi') { // 添加对 isZhiShi 的处理
+        skillFilters.isZhiShi = !skillFilters.isZhiShi;
         badge.classList.toggle('active');
     } else {
-        if (activeFilters[filterType].has(value)) {
-            activeFilters[filterType].delete(value);
+        if (skillFilters[filterType].has(value)) {
+            skillFilters[filterType].delete(value);
             badge.classList.remove('active');
         } else {
-            activeFilters[filterType].add(value);
+            skillFilters[filterType].add(value);
             badge.classList.add('active');
         }
     }
-    updateSkillList(skillData, matchesFilters); // 确保切换过滤器状态后更新技能列表
+    updateSkillList(skillData, matchesFilters);
 }
 
 // 检查技能是否匹配过滤条件
@@ -136,13 +147,16 @@ export function matchesFilters(skill) {
             return String(value).toLowerCase().includes(searchText);
         });
 
-    const familyMatch = activeFilters.family.size === 0 || 
-        (skill.familyList && activeFilters.family.has(skill.familyList));
+    const familyMatch = skillFilters.family.size === 0 || 
+        (skill.familyList && skillFilters.family.has(skill.familyList));
 
-    const juelueMatch = !activeFilters.isJueXue || 
+    const juexueMatch = !skillFilters.isJueXue || 
         (skill.mcmrestrict && skill.mcmrestrict.includes(',300'));
 
-    return searchMatch && familyMatch && juelueMatch;
+    const zhishiMatch = !skillFilters.isZhiShi || // 添加对 isZhiShi 的匹配逻辑
+        (skill.wxclassify && skill.wxclassify === 'zhishi');
+
+    return searchMatch && familyMatch && juexueMatch && zhishiMatch;
 }
 
 // 更新统计信息

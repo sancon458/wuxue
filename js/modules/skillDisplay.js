@@ -291,7 +291,7 @@ export function updateSkillList(skillData, matchesFilters) {
                 const modal = new bootstrap.Modal(document.getElementById('jsonModal'));
                 const jsonContent = document.getElementById('jsonContent');
                 jsonContent.textContent = JSON.stringify(skill, null, 2);
-                document.getElementById('jsonModalLabel').textContent = `${skill.name || id} - 技能详情`;
+                document.getElementById('jsonModalLabel').textContent = `${skill.name || id} - 武学详情`;
                 
                 try {
                     console.log('Loading active skill data for skill:', id);
@@ -322,6 +322,12 @@ export function updateSkillList(skillData, matchesFilters) {
                 jueXueBadge.textContent = '绝学';
                 cardHeader.appendChild(jueXueBadge);
             }
+            if (skill.wxclassify && skill.wxclassify == 'zhishi') { // 添加“知识”标识
+                const zhiShiBadge = document.createElement('span');
+                zhiShiBadge.className = 'badge bg-danger jue-xue-badge';
+                zhiShiBadge.textContent = '知识';
+                cardHeader.appendChild(zhiShiBadge);
+            }
             
             const cardBody = document.createElement('div');
             cardBody.className = 'card-body';
@@ -338,7 +344,7 @@ export function updateSkillList(skillData, matchesFilters) {
             }
             
             if (skill.methods) {
-                content += '<p><strong>技能类型：</strong>';
+                content += '<p><strong>武学类型：</strong>';
                 const methodArray = typeof skill.methods === 'string' 
                     ? skill.methods.split(',') 
                     : [String(skill.methods)];

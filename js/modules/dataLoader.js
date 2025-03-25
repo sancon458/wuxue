@@ -76,7 +76,7 @@ export function getUniqueValues(skills, key) {
     return Array.from(values).filter(v => v);
 }
 
-// 获取技能类型名称
+// 获取武学类型名称
 export function getMethodName(methodId) {
     const methodNames = {
         "1": "拳脚",

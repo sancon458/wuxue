@@ -34,9 +34,18 @@
                 </div>
                 <div class="col-md-12">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="mb-0">仅绝学</h5>
+                        <h5 class="mb-0">绝学</h5>
                         <label class="switch">
-                            <input type="checkbox" onclick="toggleFilter(this, 'juelue', 'juelue')">
+                            <input type="checkbox" onclick="toggleFilter(this, 'juexue', 'juexue')">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0">知识</h5>
+                        <label class="switch">
+                            <input type="checkbox" onclick="toggleFilter(this, 'zhishi', 'zhishi')">
                             <span class="slider round"></span>
                         </label>
                     </div>
@@ -75,7 +84,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="jsonModalLabel">技能详情</h5>
+                    <h5 class="modal-title" id="jsonModalLabel">武学详情</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
