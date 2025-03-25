@@ -316,6 +316,13 @@ export function updateSkillList(skillData, matchesFilters) {
             cardHeader.className = 'card-header';
             cardHeader.textContent = skill.name || id;
             
+            if (skill.mcmrestrict && skill.mcmrestrict.includes(',300')) {
+                const jueXueBadge = document.createElement('span');
+                jueXueBadge.className = 'badge bg-danger jue-xue-badge';
+                jueXueBadge.textContent = '绝学';
+                cardHeader.appendChild(jueXueBadge);
+            }
+            
             const cardBody = document.createElement('div');
             cardBody.className = 'card-body';
             

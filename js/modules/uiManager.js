@@ -83,7 +83,8 @@ export function initModals() {
 
 // 初始化过滤器状态
 export const activeFilters = {
-    family: new Set()
+    family: new Set(),
+    isJueXue: false // 修正关键字为 isJueXue
 };
 
 // 创建过滤器标签
@@ -110,12 +111,17 @@ export function clearFilters(filterType) {
 
 // 切换过滤器状态
 export function toggleFilter(badge, value, filterType) {
-    if (activeFilters[filterType].has(value)) {
-        activeFilters[filterType].delete(value);
-        badge.classList.remove('active');
+    if (filterType === 'juelue') {
+        activeFilters.isJueXue = !activeFilters.isJueXue; // 修正关键字为 isJueXue
+        badge.classList.toggle('active');
     } else {
-        activeFilters[filterType].add(value);
-        badge.classList.add('active');
+        if (activeFilters[filterType].has(value)) {
+            activeFilters[filterType].delete(value);
+            badge.classList.remove('active');
+        } else {
+            activeFilters[filterType].add(value);
+            badge.classList.add('active');
+        }
     }
     updateSkillList(skillData, matchesFilters); // 确保切换过滤器状态后更新技能列表
 }
@@ -133,7 +139,10 @@ export function matchesFilters(skill) {
     const familyMatch = activeFilters.family.size === 0 || 
         (skill.familyList && activeFilters.family.has(skill.familyList));
 
-    return searchMatch && familyMatch;
+    const juelueMatch = !activeFilters.isJueXue || 
+        (skill.mcmrestrict && skill.mcmrestrict.includes(',300'));
+
+    return searchMatch && familyMatch && juelueMatch;
 }
 
 // 更新统计信息

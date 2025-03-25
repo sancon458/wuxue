@@ -1,6 +1,6 @@
 // 主文件
 import { loadSkillData, loadSkillAutoData, getUniqueValues } from './modules/dataLoader.js';
-import { initModals, createFilterBadges, clearFilters, matchesFilters, updateStats } from './modules/uiManager.js';
+import { initModals, createFilterBadges, clearFilters, matchesFilters, updateStats, toggleFilter } from './modules/uiManager.js'; // 确保导入 toggleFilter 函数
 import { updateSkillList } from './modules/skillDisplay.js';
 
 // 导出 skillData
@@ -45,3 +45,6 @@ async function initializePage() {
 
 // 页面加载完成后开始初始化
 document.addEventListener('DOMContentLoaded', initializePage);
+
+// 确保 toggleFilter 函数在全局作用域中可用
+window.toggleFilter = toggleFilter;

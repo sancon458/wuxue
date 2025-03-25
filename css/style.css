@@ -30,13 +30,98 @@ body {
     font-weight: bold;
     border-bottom: 1px solid rgba(0,0,0,0.125);
 }
-.filter-section {
-    background-color: white;
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* 开关样式优化 */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
 }
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* 筛选区域排版改进 */
+.filter-section {
+    margin-bottom: 20px;
+}
+
+.filter-section .row {
+    margin-bottom: 10px;
+}
+
+.filter-section .col-md-12 {
+    padding: 0;
+}
+
+.filter-section h5 {
+    margin-bottom: 5px;
+}
+
+.filter-section .clear-filters {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.filter-section .clear-filters:hover {
+    text-decoration: none;
+}
+
+.filter-section .filter-badge {
+    margin-right: 5px;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+.filter-section .filter-badge.active {
+    background-color: #007bff;
+    color: white;
+}
+
 .skill-description {
     white-space: pre-wrap;
     font-size: 0.9rem;
@@ -113,4 +198,14 @@ pre {
 }
 .table td {
     vertical-align: middle;
+}
+.jue-xue-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    transform: rotate(-15deg);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
