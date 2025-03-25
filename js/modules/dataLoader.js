@@ -86,7 +86,10 @@ export function getMethodName(methodId) {
         "5": "剑法",
         "6": "刀法",
         "7": "棍法",
-        "8": "暗器"
+        "8": "暗器",
+        "9": "鞭法",
+        "10": "双持",
+        "11": "乐器"
     };
     return methodNames[methodId] || methodId;
 }
