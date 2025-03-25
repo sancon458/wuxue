@@ -220,10 +220,6 @@ export function showActiveSkills(skillId, activeSkillData) {
                     <table class="table table-sm table-hover">
                         <thead>
                             <tr>
-                                <th>技能效果</th>
-                                <th>${baseSkill.desc}</th>
-                            </tr>
-                            <tr>
                                 <th>重数</th>
                                 <th>属性</th>
                             </tr>
@@ -232,7 +228,7 @@ export function showActiveSkills(skillId, activeSkillData) {
 
             selectedSkills.forEach((skill, index) => {
                 const skillText = Object.entries(skill.data)
-                    .filter(([key, value]) => ['pvpcd', 'cost', 'effects'].includes(key))
+                    .filter(([key, value]) => ['desc', 'pvpcd', 'cost', 'effects'].includes(key))
                     .map(([key, value]) => {
                         if (key === 'effects') {
                             return `${key}: ${createEffectLinks(value)}`;
