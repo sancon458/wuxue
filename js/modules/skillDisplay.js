@@ -19,11 +19,15 @@ export function createEffectLinks(effectsStr) {
     if (!effectsStr) return effectsStr;
     const effectIds = parseEffects(effectsStr);
     let result = effectsStr;
+    const processedIds = new Set(); // 添加一个Set来存储已经处理过的效果ID
     effectIds.forEach(id => {
-        result = result.replace(
-            `"${id}"`,
-            `<span class="effect-link" data-effect-id="${id}" style="color: #007bff; text-decoration: underline; cursor: pointer;">"${id}"</span>`
-        );
+        if (!processedIds.has(id)) { // 检查是否已经处理过该效果ID
+            result = result.replace(
+                new RegExp(`"${id}"`, 'g'), // 使用正则表达式全局替换
+                `<span class="effect-link" data-effect-id="${id}" style="color: #007bff; text-decoration: underline; cursor: pointer;">"${id}"</span>`
+            );
+            processedIds.add(id); // 标记该效果ID已处理
+        }
     });
     return result;
 }
