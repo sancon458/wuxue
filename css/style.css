@@ -1,0 +1,116 @@
+/* 模态窗口堆叠管理 */
+.modal {
+    z-index: 1050; /* 基础层级 */
+}
+.modal-backdrop {
+    z-index: 1040;
+}
+.modal.show {
+    pointer-events: none; /* 默认禁止所有模态窗口的交互 */
+}
+.modal.show.top-modal {
+    pointer-events: auto; /* 只允许最上层模态窗口交互 */
+}
+body {
+    background-color: #f5f5f5;
+    padding: 20px;
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+}
+.card {
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.card-header {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(0,0,0,0.125);
+}
+.filter-section {
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.skill-description {
+    white-space: pre-wrap;
+    font-size: 0.9rem;
+    color: #555;
+}
+.badge {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+#searchInput {
+    border-radius: 20px;
+    padding-left: 20px;
+    border: 1px solid #ddd;
+}
+.filter-badge {
+    cursor: pointer;
+    margin: 5px;
+    user-select: none;
+    transition: all 0.2s;
+}
+.filter-badge:hover {
+    opacity: 0.8;
+}
+.filter-badge.active {
+    background-color: #0d6efd !important;
+}
+.loading {
+    text-align: center;
+    padding: 20px;
+}
+.stats {
+    margin-bottom: 15px;
+    color: #666;
+    font-size: 0.9rem;
+}
+.page-header {
+    background-color: #343a40;
+    color: white;
+    padding: 20px 0;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+.attribute-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+}
+.attribute-label {
+    font-weight: bold;
+    color: #555;
+}
+.attribute-value {
+    color: #212529;
+}
+.clear-filters {
+    cursor: pointer;
+    color: #dc3545;
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+pre {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 15px;
+    font-size: 0.9rem;
+}
+.table-responsive {
+    margin-top: 1rem;
+}
+.table {
+    font-size: 0.9rem;
+}
+.table td {
+    vertical-align: middle;
+}
