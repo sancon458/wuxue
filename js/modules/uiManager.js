@@ -147,6 +147,5 @@ export function matchesFilters(skill) {
 
 // 更新统计信息
 export function updateStats(filteredCount, totalCount) {
-    const statsInfo = document.getElementById('statsInfo');
-    statsInfo.textContent = `显示 ${filteredCount} 个技能（共 ${totalCount} 个）`;
+
 }
