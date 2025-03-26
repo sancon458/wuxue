@@ -97,20 +97,6 @@ export function showEffectDetails(effectId, activeSkillData) {
     }
 }
 
-// 找出对象之间的差异
-function findDifferences(obj1, obj2) {
-    const differences = {};
-    for (const key in obj1) {
-        if (typeof obj1[key] === 'object' && obj1[key] !== null) {
-            continue;
-        }
-        if (obj1[key] !== obj2[key]) {
-            differences[key] = obj2[key];
-        }
-    }
-    return differences;
-}
-
 // 显示被动技能信息
 export function showPassiveSkills(skillId, skillAutoData) {
     const container = document.getElementById('passiveSkillsList'); // 修改为被动技能内容区域的ID
@@ -205,7 +191,7 @@ export function showActiveSkills(skillId, activeSkillData) {
         html += `
         <div class="mb-4">
             <h5>技能基础数据</h5>
-            <pre style="max-height: 200px; overflow-y: auto;">${JSON.stringify(baseSkill, null, 2)}</pre>
+            ${createSkillDetailsHtml(baseSkill)}
         </div>`;
 
         // 根据技能ID格式筛选第一重和第十重
@@ -290,7 +276,7 @@ export function updateSkillList(skillData, matchesFilters) {
             card.onclick = async () => {
                 const modal = new bootstrap.Modal(document.getElementById('jsonModal'));
                 const jsonContent = document.getElementById('jsonContent');
-                jsonContent.textContent = JSON.stringify(skill, null, 2);
+                jsonContent.innerHTML = createSkillDetailsHtml(skill); // 使用新的HTML生成函数
                 document.getElementById('jsonModalLabel').textContent = `${skill.name || id} - 武学详情`;
                 
                 try {
@@ -395,4 +381,18 @@ export function updateSkillList(skillData, matchesFilters) {
     });
 
     return { filteredCount, totalCount };
+}
+
+// 新增函数：将技能详情转换为HTML
+function createSkillDetailsHtml(skill) {
+    let html = '<div class="skill-details-list">';
+    for (const [key, value] of Object.entries(skill)) {
+        if (typeof value === 'object' && value !== null) {
+            html += `<div class="skill-attribute"><strong>${key}:</strong> <pre>${JSON.stringify(value, null, 2)}</pre></div>`;
+        } else {
+            html += `<div class="skill-attribute"><strong>${key}:</strong> ${value}</div>`;
+        }
+    }
+    html += '</div>';
+    return html;
 }

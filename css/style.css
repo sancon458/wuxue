@@ -209,3 +209,54 @@ pre {
     transform: rotate(-15deg);
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
+
+/* 技能详情列表样式 */
+.skill-details-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.skill-attribute {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.skill-attribute strong {
+    flex-shrink: 0;
+    width: 150px;
+}
+
+.skill-attribute pre {
+    margin: 0;
+    padding: 5px;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* 自定义滚动条样式 */
+.skill-details-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.skill-details-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.skill-details-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.skill-details-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
