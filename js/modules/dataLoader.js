@@ -99,6 +99,18 @@ export function getMethodName(methodId) {
     return methodNames[methodId] || methodId;
 }
 
+// 获取武学类属性
+export function getElementName(elementId) {
+    const methodNames = {
+        "1": "无性",
+        "3": "阳性",
+        "5": "阴性",
+        "7": "混元",
+        "9": "外功",
+    };
+    return methodNames[elementId] || elementId;
+}
+
 // 查找关联的主动技能
 export function findActiveSkills(skillId, activeSkillData) {
     if (!activeSkillData || !activeSkillData.skillRelation) return [];

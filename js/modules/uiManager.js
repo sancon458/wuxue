@@ -91,6 +91,7 @@ export function initModals() {
 // 初始化过滤器状态
 export const skillFilters = {
     family: new Set(),
+    element: new Set(),
     isJueXue: false,
     isZhiShi: false // 添加 isZhiShi 属性
 };

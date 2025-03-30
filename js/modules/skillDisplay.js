@@ -1,5 +1,5 @@
 // 武学展示逻辑模块
-import { findActiveSkills, getMethodName } from './dataLoader.js';
+import { findActiveSkills, getMethodName, getElementName } from './dataLoader.js';
 import { modalManager, effectModal } from './uiManager.js';
 
 // 解析effects字符串，返回效果ID数组
@@ -356,11 +356,20 @@ export function updateSkillList(skillData, matchesFilters) {
                 { key: 'dodge', label: '闪避系数' },
                 { key: 'atkSpd', label: '攻速系数' },
                 { key: 'neili', label: '内力系数' },
-                { key: 'HpRate', label: '生命系数' }
+                { key: 'HpRate', label: '生命系数' },
+                { key: 'zhaoJiaDefDamageClass', label: '伤害/招架类型' },
+                { key: 'zhaoJiaDefDamageParam', label: '招架减伤率' }
             ];
 
             attributes.forEach(attr => {
-                if (skill[attr.key]) {
+                if (attr.key == "zhaoJiaDefDamageClass") {
+                    content += `
+                    <div class="attribute-row">
+                        <span class="attribute-label">${attr.label}：</span>
+                        <span class="attribute-value">${getElementName(skill[attr.key])}</span>
+                    </div>`;
+                }
+                else if (skill[attr.key]) {
                     content += `
                     <div class="attribute-row">
                         <span class="attribute-label">${attr.label}：</span>
