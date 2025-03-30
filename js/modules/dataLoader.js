@@ -1,3 +1,4 @@
+import * as pako from 'https://cdn.jsdelivr.net/npm/pako@2.0.4/+esm';
 // 数据加载模块
 export let skillData = {
     "正气需求": [],
@@ -10,16 +11,18 @@ export let skillRelationData = null;
 // 从JSON文件加载数据
 export async function loadSkillData() {
     try {
-        const response = await fetch('data/skill.json');
+        const response = await fetch('data/skill.json.gz');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        skillData = await response.json();
+        const gzippedData = await response.arrayBuffer();
+        const data = pako.inflate(gzippedData, { to: 'string' });
+        skillData = JSON.parse(data);
         return skillData;
     } catch (error) {
         console.error('Error loading skill data:', error);
         document.getElementById('skillList').innerHTML = 
-            '<div class="col-12"><div class="alert alert-danger">加载数据失败，请确保data/skill.json文件存在且格式正确。</div></div>';
+            '<div class="col-12"><div class="alert alert-danger">加载数据失败，请确保data/skill.json.gz文件存在且格式正确。</div></div>';
         throw error;
     }
 }
@@ -28,14 +31,15 @@ export async function loadSkillData() {
 export async function loadActiveSkillData() {
     if (activeSkillData) return activeSkillData;
     try {
-        console.log('Loading ActiveZhao.json');
-        const response = await fetch('data/activeZhao.json');
+        console.log('Loading ActiveZhao.json.gz');
+        const response = await fetch('data/activeZhao.json.gz');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
-        activeSkillData = data;
-        return data;
+        const gzippedData = await response.arrayBuffer();
+        const data = pako.inflate(gzippedData, { to: 'string' });
+        activeSkillData = JSON.parse(data);
+        return activeSkillData;
     } catch (error) {
         console.error('Error loading active skill data:', error);
         return null;
@@ -46,14 +50,15 @@ export async function loadActiveSkillData() {
 export async function loadSkillAutoData() {
     if (skillAutoData) return skillAutoData;
     try {
-        console.log('Loading skillAuto.json');
-        const response = await fetch('data/skillAuto.json');
+        console.log('Loading skillAuto.json.gz');
+        const response = await fetch('data/skillAuto.json.gz');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
-        skillAutoData = data;
-        return data;
+        const gzippedData = await response.arrayBuffer();
+        const data = pako.inflate(gzippedData, { to: 'string' });
+        skillAutoData = JSON.parse(data);
+        return skillAutoData;
     } catch (error) {
         console.error('Error loading skill auto data:', error);
         return null;
