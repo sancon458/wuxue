@@ -1,5 +1,5 @@
 // UI管理模块
-import { activeSkillData } from './dataLoader.js';
+import { activeSkillData, getElementName  } from './dataLoader.js';
 import { updateSkillList } from './skillDisplay.js'; // 导入 updateSkillList 函数
 import { skillData } from '../script.js'; // 导入 skillData
 
@@ -91,9 +91,9 @@ export function initModals() {
 // 初始化过滤器状态
 export const skillFilters = {
     family: new Set(),
-    element: new Set(),
+    element: new Set(), // 新增 element 过滤器状态
     isJueXue: false,
-    isZhiShi: false // 添加 isZhiShi 属性
+    isZhiShi: false
 };
 
 // 创建过滤器标签
@@ -103,8 +103,8 @@ export function createFilterBadges(containerId, values, filterType) {
     values.sort().forEach(value => {
         const badge = document.createElement('span');
         badge.className = 'badge bg-secondary filter-badge';
-        badge.textContent = value;
-        badge.onclick = () => toggleFilter(badge, value, filterType); // 确保点击事件绑定正确
+        badge.textContent = filterType === 'element' ? getElementName(value) : value; // 根据过滤器类型显示不同的文本
+        badge.onclick = () => toggleFilter(badge, value, filterType);
         container.appendChild(badge);
     });
 }
@@ -123,9 +123,17 @@ export function toggleFilter(badge, value, filterType) {
     if (filterType === 'juexue') {
         skillFilters.isJueXue = !skillFilters.isJueXue;
         badge.classList.toggle('active');
-    } else if (filterType === 'zhishi') { // 添加对 isZhiShi 的处理
+    } else if (filterType === 'zhishi') {
         skillFilters.isZhiShi = !skillFilters.isZhiShi;
         badge.classList.toggle('active');
+    } else if (filterType === 'element') { // 处理 element 过滤器
+        if (skillFilters[filterType].has(value)) {
+            skillFilters[filterType].delete(value);
+            badge.classList.remove('active');
+        } else {
+            skillFilters[filterType].add(value);
+            badge.classList.add('active');
+        }
     } else {
         if (skillFilters[filterType].has(value)) {
             skillFilters[filterType].delete(value);
@@ -154,10 +162,13 @@ export function matchesFilters(skill) {
     const juexueMatch = !skillFilters.isJueXue || 
         (skill.mcmrestrict && skill.mcmrestrict.includes(',300'));
 
-    const zhishiMatch = !skillFilters.isZhiShi || // 添加对 isZhiShi 的匹配逻辑
+    const zhishiMatch = !skillFilters.isZhiShi || 
         (skill.wxclassify && skill.wxclassify === 'zhishi');
 
-    return searchMatch && familyMatch && juexueMatch && zhishiMatch;
+    const elementMatch = skillFilters.element.size === 0 || // 处理 element 过滤器
+        (skill.zhaoJiaDefDamageClass && skillFilters.element.has(skill.zhaoJiaDefDamageClass));
+
+    return searchMatch && familyMatch && juexueMatch && zhishiMatch && elementMatch;
 }
 
 // 更新统计信息

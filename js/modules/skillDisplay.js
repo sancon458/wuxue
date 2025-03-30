@@ -396,7 +396,9 @@ export function updateSkillList(skillData, matchesFilters) {
 function createSkillDetailsHtml(skill) {
     let html = '<div class="skill-details-list">';
     for (const [key, value] of Object.entries(skill)) {
-        if (typeof value === 'object' && value !== null) {
+        if (key === 'zhaoJiaDefDamageClass') { // 处理武学属性字段
+            html += `<div class="skill-attribute"><strong>${key}:</strong> ${getElementName(value)}</div>`;
+        } else if (typeof value === 'object' && value !== null) {
             html += `<div class="skill-attribute"><strong>${key}:</strong> <pre>${JSON.stringify(value, null, 2)}</pre></div>`;
         } else {
             html += `<div class="skill-attribute"><strong>${key}:</strong> ${value}</div>`;

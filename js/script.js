@@ -22,6 +22,10 @@ async function initializePage() {
         const families = getUniqueValues(skillData.skills, 'familyList');
         createFilterBadges('familyFilters', families, 'family');
         
+        // 创建武学属性过滤器
+        const elements = getUniqueValues(skillData.skills, 'zhaoJiaDefDamageClass');
+        createFilterBadges('elementFilters', elements, 'element');
+        
         // 添加搜索监听器
         document.getElementById('searchInput').addEventListener('input', () => {
             const { filteredCount, totalCount } = updateSkillList(skillData, matchesFilters);
