@@ -164,6 +164,11 @@ input:checked + .slider:before {
     margin-bottom: 20px;
     border-radius: 5px;
 }
+.page-header h1 {
+    margin: 0 auto; /* 确保标题居中 */
+    flex: 1; /* 让标题占据剩余空间，使其居中 */
+    text-align: center; /* 确保标题文本居中 */
+}
 .attribute-row {
     display: flex;
     justify-content: space-between;
@@ -259,4 +264,26 @@ pre {
 
 .skill-details-list::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+.option-btn {
+    cursor: pointer;
+    font-size: 24px;
+    
+}
+.option-menu {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    z-index: 1;
+}
+.option-menu a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+.option-menu a:hover {
+    background-color: #f1f1f1;
 }
