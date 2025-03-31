@@ -11,7 +11,7 @@ export let skillRelationData = null;
 // 从JSON文件加载数据
 export async function loadSkillData() {
     try {
-        const response = await fetch('data/skill.json.gz');
+        const response = await fetch('/data/skill.json.gz');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

@@ -1,7 +1,7 @@
 // UI管理模块
 import { activeSkillData, getElementName  } from './dataLoader.js';
 import { updateSkillList } from './skillDisplay.js'; // 导入 updateSkillList 函数
-import { skillData } from '../script.js'; // 导入 skillData
+import { skillData } from './wuxue.js'; // 导入 skillData
 
 // 模态窗口管理器
 export const modalManager = {

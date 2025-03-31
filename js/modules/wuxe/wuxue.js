@@ -1,7 +1,7 @@
 // 主文件
-import { loadSkillData, loadSkillAutoData, getUniqueValues } from './modules/dataLoader.js';
-import { initModals, createFilterBadges, clearFilters, matchesFilters, updateStats, toggleFilter } from './modules/uiManager.js'; // 确保导入 toggleFilter 函数
-import { updateSkillList } from './modules/skillDisplay.js';
+import { loadSkillData, loadSkillAutoData, getUniqueValues } from './dataLoader.js';
+import { initModals, createFilterBadges, clearFilters, matchesFilters, updateStats, toggleFilter } from './uiManager.js'; // 确保导入 toggleFilter 函数
+import { updateSkillList } from './skillDisplay.js';
 
 // 导出 skillData
 export let skillData = null;
