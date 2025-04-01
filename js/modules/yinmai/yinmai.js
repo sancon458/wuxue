@@ -109,9 +109,9 @@ function createMindItemElement(mindItem, mindItemKey) {
             if (grooveInfo) {
                 grooveElement.textContent = `窍关${i}: ${grooveInfo.name}`;
                 grooveElement.textContent += ` (类型: ${grooveInfo.type === 1 ? '参伐' : grooveInfo.type === 2 ? '守御' : '共贯'})`;
-                grooveElement.textContent += ` class: ${grooveInfo.class}`;
-                grooveElement.textContent += ` 资源: ${grooveInfo.resource.length > 0 ? grooveInfo.resource.map(resource => `${getResourceName(resource[0])}: ${resource[1]}`).join(', ') : '无'}`;
-                grooveElement.textContent += ` 冲脉时间: ${formatTime(grooveInfo.time)}`;
+                grooveElement.textContent += ` (等级: ${grooveInfo.class === 1 ? '正基' : grooveInfo.type === 2 ? '中丹' : '通玄'})`;
+                grooveElement.textContent += ` (资源: ${grooveInfo.resource.length > 0 ? grooveInfo.resource.map(resource => `${getResourceName(resource[0])}: ${resource[1]}`).join(', ') : '无'})`;
+                grooveElement.textContent += ` (冲脉时间: ${formatTime(grooveInfo.time)})`;
             } else {
                 grooveElement.textContent = `窍关${i}: ${groove}`;
             }
@@ -150,6 +150,17 @@ function getResourceName(resourceKey) {
         xizhaoling: "昔朝令",
     };
     return currency[resourceKey] || resourceKey;
+}
+
+function getElementName(elementId) {
+    const methodNames = {
+        "1": "无性",
+        "3": "阳性",
+        "5": "阴性",
+        "7": "混元",
+        "9": "外功",
+    };
+    return methodNames[elementId] || elementId;
 }
 
 function formatTime(seconds) {
