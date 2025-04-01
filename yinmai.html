@@ -41,6 +41,26 @@
             </div>
         </div>
 
+        <!-- 新增标签页结构 -->
+        <div id="meridianLinkTabs" class="d-none">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="zhengji-tab" data-bs-toggle="tab" data-bs-target="#zhengji" type="button" role="tab" aria-controls="zhengji" aria-selected="true">正基</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="zhongdan-tab" data-bs-toggle="tab" data-bs-target="#zhongdan" type="button" role="tab" aria-controls="zhongdan" aria-selected="false">中丹</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tongyuan-tab" data-bs-toggle="tab" data-bs-target="#tongyuan" type="button" role="tab" aria-controls="tongyuan" aria-selected="false">通元</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="zhengji" role="tabpanel" aria-labelledby="zhengji-tab"></div>
+                <div class="tab-pane fade" id="zhongdan" role="tabpanel" aria-labelledby="zhongdan-tab"></div>
+                <div class="tab-pane fade" id="tongyuan" role="tabpanel" aria-labelledby="tongyuan-tab"></div>
+            </div>
+        </div>
+
         <script>
             function toggleOptionMenu(event) {
                 const menu = document.getElementById('optionMenu');

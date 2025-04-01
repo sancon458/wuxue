@@ -2,6 +2,7 @@ import * as pako from 'https://cdn.jsdelivr.net/npm/pako@2.0.4/+esm';
 
 let acupointConfig = {};
 let meridianMap = {};
+let meridianLinkConfig = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     Promise.all([
@@ -32,6 +33,20 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(data => {
                 acupointConfig = data['玄脉图'];
+            }),
+        fetch('data/MeridianLinkConfig.json.gz')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.arrayBuffer();
+            })
+            .then(gzippedData => {
+                const data = pako.inflate(gzippedData, { to: 'string' });
+                return JSON.parse(data);
+            })
+            .then(data => {
+                meridianLinkConfig = data['玄络'];
             })
     ])
     .then(() => {
@@ -74,6 +89,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const firstMindItemElement = createMindItemElement(firstMindItem, firstMindItemKey);
             meridianMapContainer.appendChild(firstMindItemElement);
         }
+
+        // 新增“展示玄络”按钮
+        const dropdownButton = document.getElementById('mindItemDropdown');
+        const showMeridianLinkButton = document.createElement('button');
+        showMeridianLinkButton.className = 'btn btn-secondary ms-2';
+        showMeridianLinkButton.textContent = '展示玄络';
+        showMeridianLinkButton.addEventListener('click', () => {
+            meridianMapContainer.innerHTML = ''; // Clear previous content
+            document.getElementById('meridianLinkTabs').classList.remove('d-none'); // Show tabs
+            const meridianLinkElement = createMeridianLinkElement();
+            document.getElementById('zhengji').innerHTML = meridianLinkElement['正基'];
+            document.getElementById('zhongdan').innerHTML = meridianLinkElement['中丹'];
+            document.getElementById('tongyuan').innerHTML = meridianLinkElement['通元'];
+        });
+        dropdownButton.parentNode.insertBefore(showMeridianLinkButton, dropdownButton.nextSibling);
     })
     .catch(error => console.error('Error loading JSON files:', error));
 });
@@ -169,4 +199,38 @@ function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     seconds %= 60;
     return `${hours}小时${minutes}分钟${seconds}秒`;
+}
+
+function createMeridianLinkElement() {
+    const categories = {
+        '正基': [],
+        '中丹': [],
+        '通元': []
+    };
+
+    Object.values(meridianLinkConfig).forEach(link => {
+        const category = link.class === 1 ? '正基' : link.class === 2 ? '中丹' : '通元';
+        categories[category].push(link);
+    });
+
+    const result = {
+        '正基': '',
+        '中丹': '',
+        '通元': ''
+    };
+
+    Object.keys(categories).forEach(category => {
+        categories[category].forEach(link => {
+            const linkElement = document.createElement('p');
+            linkElement.textContent = `名称: ${link.name}`;
+            linkElement.textContent += ` 解锁条件: ${link.Unlocktext}`;
+            linkElement.textContent += ` 资源: ${link.resource.length > 0 ? link.resource.map(resource => `${getResourceName(resource[0])}: ${resource[1]}`).join(', ') : '无'}`;
+            linkElement.textContent += ` 属性加成: ${link.property.map(prop => `${getElementName(prop[2])}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}`;
+            linkElement.textContent += ` 特殊效果: ${link.specialtext}`;
+            linkElement.textContent += ` 特殊效果解锁条件: ${link.SUnlocktext}`;
+            result[category] += linkElement.outerHTML;
+        });
+    });
+
+    return result;
 }
