@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const mindItemKey = event.target.dataset.mindItemKey;
                 const mindItem = meridianMap[mindItemKey];
                 meridianMapContainer.innerHTML = ''; // Clear previous content
+                document.getElementById('meridianLinkTabs').classList.add('d-none'); // Hide tabs
                 const mindItemElement = createMindItemElement(mindItem, mindItemKey);
                 meridianMapContainer.appendChild(mindItemElement);
             }
@@ -134,21 +135,42 @@ function createMindItemElement(mindItem, mindItemKey) {
         const groove = mindItem[`groove${i}`];
         const precondition = mindItem[`precondition${i}`];
         if (groove) {
-            const grooveElement = document.createElement('p');
+            const grooveElement = document.createElement('div');
+            grooveElement.className = 'meridian-link'; // 添加新的样式类
+
             const grooveInfo = acupointConfig[groove];
             if (grooveInfo) {
-                grooveElement.textContent = `窍关${i}: ${grooveInfo.name}`;
-                grooveElement.textContent += ` (类型: ${grooveInfo.type === 1 ? '参伐' : grooveInfo.type === 2 ? '守御' : '共贯'})`;
-                grooveElement.textContent += ` (等级: ${grooveInfo.class === 1 ? '正基' : grooveInfo.type === 2 ? '中丹' : '通玄'})`;
-                grooveElement.textContent += ` (资源: ${grooveInfo.resource.length > 0 ? grooveInfo.resource.map(resource => `${getResourceName(resource[0])}: ${resource[1]}`).join(', ') : '无'})`;
-                grooveElement.textContent += ` (冲脉时间: ${formatTime(grooveInfo.time)})`;
+                const grooveNameElement = document.createElement('h6');
+                grooveNameElement.textContent = `窍关${i}: ${grooveInfo.name}`;
+                grooveElement.appendChild(grooveNameElement);
+
+                const grooveTypeElement = document.createElement('p');
+                grooveTypeElement.textContent = `类型: ${grooveInfo.type === 1 ? '参伐' : grooveInfo.type === 2 ? '守御' : '共贯'}`;
+                grooveElement.appendChild(grooveTypeElement);
+
+                const grooveClassElement = document.createElement('p');
+                grooveClassElement.textContent = `等级: ${grooveInfo.class === 1 ? '正基' : grooveInfo.class === 2 ? '中丹' : '通玄'}`;
+                grooveElement.appendChild(grooveClassElement);
+
+                const grooveResourceElement = document.createElement('p');
+                grooveResourceElement.textContent = `资源: ${grooveInfo.resource.length > 0 ? grooveInfo.resource.map(resource => `${getResourceName(resource[0])}: ${resource[1]}`).join(', ') : '无'}`;
+                grooveElement.appendChild(grooveResourceElement);
+
+                const grooveTimeElement = document.createElement('p');
+                grooveTimeElement.textContent = `冲脉时间: ${formatTime(grooveInfo.time)}`;
+                grooveElement.appendChild(grooveTimeElement);
             } else {
-                grooveElement.textContent = `窍关${i}: ${groove}`;
+                const grooveNameElement = document.createElement('h6');
+                grooveNameElement.textContent = `窍关${i}: ${groove}`;
+                grooveElement.appendChild(grooveNameElement);
             }
-            console.log(grooveInfo);
+
             if (precondition.length > 0) {
-                grooveElement.textContent += ` (前置条件: ${precondition.join(', ')})`;
+                const preconditionElement = document.createElement('p');
+                preconditionElement.textContent = `前置条件: ${precondition.join(', ')}`;
+                grooveElement.appendChild(preconditionElement);
             }
+
             mindItemElement.appendChild(grooveElement);
         }
     }
@@ -221,13 +243,33 @@ function createMeridianLinkElement() {
 
     Object.keys(categories).forEach(category => {
         categories[category].forEach(link => {
-            const linkElement = document.createElement('p');
-            linkElement.textContent = `名称: ${link.name}`;
-            linkElement.textContent += ` 解锁条件: ${link.Unlocktext}`;
-            linkElement.textContent += ` 资源: ${link.resource.length > 0 ? link.resource.map(resource => `${getResourceName(resource[0])}: ${resource[1]}`).join(', ') : '无'}`;
-            linkElement.textContent += ` 属性加成: ${link.property.map(prop => `${getElementName(prop[2])}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}`;
-            linkElement.textContent += ` 特殊效果: ${link.specialtext}`;
-            linkElement.textContent += ` 特殊效果解锁条件: ${link.SUnlocktext}`;
+            const linkElement = document.createElement('div');
+            linkElement.className = 'meridian-link'; // 添加新的样式类
+
+            const nameElement = document.createElement('h6');
+            nameElement.textContent = `名称: ${link.name}`;
+            linkElement.appendChild(nameElement);
+
+            const unlockTextElement = document.createElement('p');
+            unlockTextElement.textContent = `解锁条件: ${link.Unlocktext}`;
+            linkElement.appendChild(unlockTextElement);
+
+            const resourceElement = document.createElement('p');
+            resourceElement.textContent = `资源: ${link.resource.length > 0 ? link.resource.map(resource => `${getResourceName(resource[0])}: ${resource[1]}`).join(', ') : '无'}`;
+            linkElement.appendChild(resourceElement);
+
+            const propertyElement = document.createElement('p');
+            propertyElement.textContent = `属性加成: ${link.property.map(prop => `${getElementName(prop[2])}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}`;
+            linkElement.appendChild(propertyElement);
+
+            const specialTextElement = document.createElement('p');
+            specialTextElement.textContent = `特殊效果: ${link.specialtext}`;
+            linkElement.appendChild(specialTextElement);
+
+            const specialUnlockTextElement = document.createElement('p');
+            specialUnlockTextElement.textContent = `特殊效果解锁条件: ${link.SUnlocktext||""}`;
+            linkElement.appendChild(specialUnlockTextElement);
+
             result[category] += linkElement.outerHTML;
         });
     });

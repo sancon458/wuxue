@@ -11,6 +11,24 @@
             max-height: 200px;
             overflow-y: auto;
         }
+        /* 添加样式以美化段落 */
+        .mb-3 p {
+            margin-bottom: 0.5rem;
+        }
+        /* 新增样式以美化玄络展示 */
+        .meridian-link {
+            border: 1px solid #ccc;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.25rem;
+        }
+        .meridian-link h6 {
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        .meridian-link p {
+            margin-left: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -32,16 +50,6 @@
             </ul>
         </div>
 
-        <div id="meridianMap" class="row">
-            <div class="loading">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p>加载数据中...</p>
-            </div>
-        </div>
-
-        <!-- 新增标签页结构 -->
         <div id="meridianLinkTabs" class="d-none">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -58,6 +66,15 @@
                 <div class="tab-pane fade show active" id="zhengji" role="tabpanel" aria-labelledby="zhengji-tab"></div>
                 <div class="tab-pane fade" id="zhongdan" role="tabpanel" aria-labelledby="zhongdan-tab"></div>
                 <div class="tab-pane fade" id="tongyuan" role="tabpanel" aria-labelledby="tongyuan-tab"></div>
+            </div>
+        </div>
+
+        <div id="meridianMap" class="row">
+            <div class="loading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>加载数据中...</p>
             </div>
         </div>
 
