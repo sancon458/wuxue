@@ -263,11 +263,11 @@ function createMeridianLinkElement() {
             linkElement.appendChild(propertyElement);
 
             const specialTextElement = document.createElement('p');
-            specialTextElement.textContent = `特殊效果: ${link.specialtext}`;
+            specialTextElement.textContent = `特殊加成: ${link.specialproperty.map(prop => `${getElementName(prop[2])}${getElementName(prop[1]) == 'defDamageClass' ? '防御' : '伤害'}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}`;
             linkElement.appendChild(specialTextElement);
 
             const specialUnlockTextElement = document.createElement('p');
-            specialUnlockTextElement.textContent = `特殊效果解锁条件: ${link.SUnlocktext||""}`;
+            specialUnlockTextElement.textContent = `特殊加成解锁条件: ${link.SUnlocktext||""}`;
             linkElement.appendChild(specialUnlockTextElement);
 
             result[category] += linkElement.outerHTML;
