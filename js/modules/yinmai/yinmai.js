@@ -259,7 +259,7 @@ function createMeridianLinkElement() {
             linkElement.appendChild(resourceElement);
 
             const propertyElement = document.createElement('p');
-            propertyElement.textContent = `属性加成: ${link.property.map(prop => `${getElementName(prop[2])}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}`;
+            propertyElement.textContent = `属性加成: ${link.property.map(prop => `${getElementName(prop[2])}${getElementName(prop[1]) == 'defDamageClass' ? '防御' : '伤害'}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}`;
             linkElement.appendChild(propertyElement);
 
             const specialTextElement = document.createElement('p');
