@@ -149,7 +149,7 @@ function createMindItemElement(mindItem, mindItemKey) {
                 grooveElement.appendChild(grooveTypeElement);
 
                 const grooveClassElement = document.createElement('p');
-                grooveClassElement.textContent = `等级: ${grooveInfo.class === 1 ? '正基' : grooveInfo.class === 2 ? '中丹' : '通玄'}`;
+                grooveClassElement.textContent = `等级: ${grooveInfo.class === 1 ? '正基' : grooveInfo.class === 2 ? '中丹' : '通元'}`;
                 grooveElement.appendChild(grooveClassElement);
 
                 const grooveResourceElement = document.createElement('p');
