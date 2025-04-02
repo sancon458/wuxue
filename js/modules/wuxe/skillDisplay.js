@@ -218,15 +218,30 @@ export function showActiveSkills(skillId, activeSkillData) {
                 for (let i = 2; i <= 4; i++) {
                     const useIdKey = `use_id_${i}`;
                     const useTypeKey = `use_type_${i}`;
-                    if (selectedSkills[0].data[useIdKey] && selectedSkills[0].data[useTypeKey]) {
+                    const useValueKey = `use_value_${i}`;
+                    if (selectedSkills[0].data[useIdKey] && selectedSkills[0].data[useTypeKey] && selectedSkills[0].data[useValueKey]) {
                         const boundSkillId = selectedSkills[0].data[useIdKey].split(' or ');
-                        boundSkillId.forEach((id) => {
-                            const boundSkillName = skillData.skills[id] ?.name ?? id;
-                            html += `
-                            <tr>
-                                <td> <strong>(装备武学) : ${boundSkillName}</td>
-                            </tr>`;
-                        });
+                        const boundMethodId = selectedSkills[0].data[useValueKey];
+                        if (boundMethodId == "是") {
+                            boundSkillId.forEach((id) => {
+                                const boundSkillName = skillData.skills[id] ?.name ?? id;
+
+                                html += `
+                                <tr>
+                                    <td> <strong>准备 ${boundSkillName}</td>
+                                </tr>`;
+                            });
+                        }
+                        else {
+                            boundSkillId.forEach((id) => {
+                                const boundSkillName = skillData.skills[id] ?.name ?? id;
+
+                                html += `
+                                <tr>
+                                    <td> <strong>准备 ${boundSkillName} 为 ${getMethodName(boundMethodId)}</td>
+                                </tr>`;
+                            });
+                        }
                     }
                 }
              html += `
