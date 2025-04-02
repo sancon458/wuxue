@@ -1,5 +1,5 @@
 // 武学展示逻辑模块
-import { findActiveSkills, getMethodName, getElementName, getWeapontype } from './dataLoader.js';
+import { findActiveSkills, getMethodName, getElementName, getWeapontype, skillData } from './dataLoader.js';
 import { modalManager, effectModal } from './uiManager.js';
 
 // 解析effects字符串，返回效果ID数组
@@ -205,6 +205,36 @@ export function showActiveSkills(skillId, activeSkillData) {
         if (selectedSkills.length > 1) {
             html += `
             <div>
+                <h5>绑定武学</h5>
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>绑定武学</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+            // 检查 use_id_2, use_id_3, use_id_4 等字段
+                for (let i = 2; i <= 4; i++) {
+                    const useIdKey = `use_id_${i}`;
+                    const useTypeKey = `use_type_${i}`;
+                    if (selectedSkills[0].data[useIdKey] && selectedSkills[0].data[useTypeKey]) {
+                        const boundSkillId = selectedSkills[0].data[useIdKey].split(' or ');
+                        boundSkillId.forEach((id) => {
+                            const boundSkillName = skillData.skills[id] ?.name ?? id;
+                            html += `
+                            <tr>
+                                <td> <strong>(装备武学) : ${boundSkillName}</td>
+                            </tr>`;
+                        });
+                    }
+                }
+             html += `
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div>
                 <h5>各重数差异</h5>
                 <div class="table-responsive">
                     <table class="table table-sm table-hover">
@@ -227,6 +257,7 @@ export function showActiveSkills(skillId, activeSkillData) {
                     })
                     .join('<br>');
 
+                
                 if (skillText) {
                     html += `
                     <tr>
