@@ -70,13 +70,15 @@ export async function loadSkillAutoData() {
 // 获取唯一的分类值
 export function getUniqueValues(skills, key) {
     const values = new Set();
+    
     Object.values(skills).forEach(skill => {
         if (skill[key]) {
-            if (Array.isArray(skill[key]) || (typeof skill[key] === 'string' && skill[key].includes(','))) {
-                const arrayValues = Array.isArray(skill[key]) ? skill[key] : skill[key].split(',');
+            let methodStr = String(skill[key]);
+            if (methodStr.includes(',')) {
+                const arrayValues = methodStr.split(',');
                 arrayValues.forEach(v => values.add(v.trim()));
             } else {
-                values.add(skill[key]);
+                values.add(methodStr);
             }
         }
     });
@@ -138,9 +140,9 @@ export function getWeapontype(weapontypeId) {
         "anqi1": "锥形暗器",
         "anqi2": "圆形暗器",
         "anqi3": "针形暗器",
-        "shuangchi": "双环",
-        "shuangchi": "对剑",
-        "shuangchi": "双钩",
+        "shuangchi1": "双环",
+        "shuangchi2": "对剑",
+        "shuangchi3": "双钩",
         "qinfa1" : "古琴",
         "qinfa2" : "笛子"
     };

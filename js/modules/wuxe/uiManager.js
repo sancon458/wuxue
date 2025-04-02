@@ -1,5 +1,5 @@
 // UI管理模块
-import { activeSkillData, getElementName  } from './dataLoader.js';
+import { activeSkillData, getElementName, getMethodName  } from './dataLoader.js';
 import { updateSkillList } from './skillDisplay.js'; // 导入 updateSkillList 函数
 import { skillData } from './wuxue.js'; // 导入 skillData
 
@@ -92,6 +92,7 @@ export function initModals() {
 export const skillFilters = {
     family: new Set(),
     element: new Set(), // 新增 element 过滤器状态
+    methods: new Set(), // 新增 methods 过滤器状态
     isJueXue: false,
     isZhiShi: false
 };
@@ -103,7 +104,13 @@ export function createFilterBadges(containerId, values, filterType) {
     values.sort().forEach(value => {
         const badge = document.createElement('span');
         badge.className = 'badge bg-secondary filter-badge';
-        badge.textContent = filterType === 'element' ? getElementName(value) : value; // 根据过滤器类型显示不同的文本
+
+        const typeHandlers = {
+            'element' : (val) => getElementName(val),
+            'methods' : (val) => getMethodName(val)
+        };
+        badge.textContent = typeHandlers[filterType] ?.(value) ?? value;
+        
         badge.onclick = () => toggleFilter(badge, value, filterType);
         container.appendChild(badge);
     });
@@ -126,14 +133,6 @@ export function toggleFilter(badge, value, filterType) {
     } else if (filterType === 'zhishi') {
         skillFilters.isZhiShi = !skillFilters.isZhiShi;
         badge.classList.toggle('active');
-    } else if (filterType === 'element') { // 处理 element 过滤器
-        if (skillFilters[filterType].has(value)) {
-            skillFilters[filterType].delete(value);
-            badge.classList.remove('active');
-        } else {
-            skillFilters[filterType].add(value);
-            badge.classList.add('active');
-        }
     } else {
         if (skillFilters[filterType].has(value)) {
             skillFilters[filterType].delete(value);
@@ -166,9 +165,12 @@ export function matchesFilters(skill) {
         (skill.wxclassify && skill.wxclassify === 'zhishi');
 
     const elementMatch = skillFilters.element.size === 0 || // 处理 element 过滤器
-        (skill.zhaoJiaDefDamageClass && skillFilters.element.has(skill.zhaoJiaDefDamageClass));
+        (skill.zhaoJiaDefDamageClass && skillFilters.element.has(String(skill.zhaoJiaDefDamageClass)));
+    
+    const methodsMatch = skillFilters.methods.size === 0 || // 处理 element 过滤器
+    (skill.methods && String(skill.methods).split(',').some(item => skillFilters.methods.has(item)));
 
-    return searchMatch && familyMatch && juexueMatch && zhishiMatch && elementMatch;
+    return searchMatch && familyMatch && juexueMatch && zhishiMatch && elementMatch && methodsMatch;
 }
 
 // 更新统计信息
