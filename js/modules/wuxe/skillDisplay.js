@@ -375,18 +375,11 @@ export function updateSkillList(skillData, matchesFilters) {
             ];
 
             attributes.forEach(attr => {
-                if (attr.key == "zhaoJiaDefDamageClass") {
+                if (skill[attr.key]) {
                     content += `
                     <div class="attribute-row">
                         <span class="attribute-label">${attr.label}：</span>
-                        <span class="attribute-value">${getElementName(skill[attr.key])}</span>
-                    </div>`;
-                }
-                else if (skill[attr.key]) {
-                    content += `
-                    <div class="attribute-row">
-                        <span class="attribute-label">${attr.label}：</span>
-                        <span class="attribute-value">${skill[attr.key]}</span>
+                        <span class="attribute-value">${attr.key === "zhaoJiaDefDamageClass" ? getElementName(skill[attr.key]) : skill[attr.key]}</span>
                     </div>`;
                 }
             });
