@@ -18,6 +18,8 @@ export async function loadSkillData() {
         const gzippedData = await response.arrayBuffer();
         const data = pako.inflate(gzippedData, { to: 'string' });
         skillData = JSON.parse(data);
+        // 一刀流特殊处理
+        skillData.skills.yidaoliu.weapontype = "jianfa1,jianfa2,jianfa3,jianfa4,jianfa5,daofa1,daofa2,daofa3,daofa4,daofa5";
         return skillData;
     } catch (error) {
         console.error('Error loading skill data:', error);

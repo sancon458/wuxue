@@ -341,7 +341,7 @@ export function updateSkillList(skillData, matchesFilters) {
                 });
                 content += '</p>';
             }
-
+            
             if (skill.weapontype) {
                 content += '<p><strong>装备类型：</strong>';
                 const methodArray = typeof skill.weapontype === 'string' 
@@ -353,10 +353,6 @@ export function updateSkillList(skillData, matchesFilters) {
                     content += `<span class="badge bg-success">${Weapontype}</span> `;
                 });
                 content += '</p>';
-            }
-            else if (skill.id == "yidaoliu") {
-                content += `<span class="badge bg-success">任意剑类</span> `;
-                content += `<span class="badge bg-success">任意刀类</span> `;
             }
             
             content += '<div class="mt-3">';
