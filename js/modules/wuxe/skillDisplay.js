@@ -263,7 +263,11 @@ export function updateSkillList(skillData, matchesFilters) {
     let filteredCount = 0;
     const totalCount = Object.keys(skillData.skills).length;
     
-    Object.entries(skillData.skills).forEach(([id, skill]) => {
+    Object.entries(skillData.skills).sort((subArrA, subArrB) => {
+        const strA = subArrA[1].name; // 提取子数组的[0]成员（字符串）
+        const strB = subArrB[1].name;
+        return strA.localeCompare(strB); // 字典序比较结果
+      }).forEach(([id, skill]) => {
         if (typeof skill === 'object' && skill !== null && matchesFilters(skill)) {
             filteredCount++;
             const col = document.createElement('div');
