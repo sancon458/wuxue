@@ -101,14 +101,48 @@ export function getMethodName(methodId) {
 
 // 获取武学类属性
 export function getElementName(elementId) {
-    const methodNames = {
+    const elementname = {
         "1": "无性",
         "3": "阳性",
         "5": "阴性",
         "7": "混元",
         "9": "外功",
     };
-    return methodNames[elementId] || elementId;
+    return elementname[elementId] || elementId;
+}
+
+export function getWeapontype(weapontypeId) {
+    const elementname = {
+        "jianfa1": "长剑",
+        "jianfa2": "短剑",
+        "jianfa3": "软剑",
+        "jianfa4": "重剑",
+        "jianfa5": "刺剑",
+        "daofa1": "长刀",
+        "daofa2": "短刀",
+        "daofa3": "弯刀",
+        "daofa4": "大环刀",
+        "daofa5": "双刃斧",
+        "gunfa1": "长棍",
+        "gunfa2": "长枪",
+        "gunfa3": "三节棍",
+        "gunfa4": "狼牙棒",
+        "gunfa5": "战戟",
+        "bianfa1": "长鞭",
+        "bianfa2": "软鞭",
+        "bianfa3": "九节鞭",
+        "bianfa4": "杆子鞭",
+        "bianfa5": "链枷",
+        "anqi1": "锥形暗器",
+        "anqi2": "圆形暗器",
+        "anqi3": "针形暗器",
+        "shuangchi": "双环",
+        "shuangchi": "对剑",
+        "shuangchi": "双钩",
+        "qinfa1" : "古琴",
+        "qinfa2" : "笛子"
+    };
+    return elementname[weapontypeId] || weapontypeId;
 }
 
 // 查找关联的主动技能

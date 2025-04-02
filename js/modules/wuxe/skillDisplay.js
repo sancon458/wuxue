@@ -1,5 +1,5 @@
 // 武学展示逻辑模块
-import { findActiveSkills, getMethodName, getElementName } from './dataLoader.js';
+import { findActiveSkills, getMethodName, getElementName, getWeapontype } from './dataLoader.js';
 import { modalManager, effectModal } from './uiManager.js';
 
 // 解析effects字符串，返回效果ID数组
@@ -340,6 +340,23 @@ export function updateSkillList(skillData, matchesFilters) {
                     content += `<span class="badge bg-success">${methodName}</span> `;
                 });
                 content += '</p>';
+            }
+
+            if (skill.weapontype) {
+                content += '<p><strong>装备类型：</strong>';
+                const methodArray = typeof skill.weapontype === 'string' 
+                    ? skill.weapontype.split(',') 
+                    : [String(skill.weapontype)];
+                
+                methodArray.forEach(type => {
+                    const Weapontype = getWeapontype(type.trim());
+                    content += `<span class="badge bg-success">${Weapontype}</span> `;
+                });
+                content += '</p>';
+            }
+            else if (skill.id == "yidaoliu") {
+                content += `<span class="badge bg-success">任意剑类</span> `;
+                content += `<span class="badge bg-success">任意刀类</span> `;
             }
             
             content += '<div class="mt-3">';
