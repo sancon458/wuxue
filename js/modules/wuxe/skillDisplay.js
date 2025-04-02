@@ -191,7 +191,7 @@ export function showActiveSkills(skillId, activeSkillData) {
         html += `
         <div class="mb-4">
             <h5>技能基础数据</h5>
-            ${createSkillDetailsHtml(baseSkill)}
+            <pre style="max-height: 200px; overflow-y: auto;">${JSON.stringify(baseSkill, null, 2)}</pre>
         </div>`;
 
         // 根据技能ID格式筛选第一重和第十重
@@ -311,7 +311,7 @@ export function updateSkillList(skillData, matchesFilters) {
             card.onclick = async () => {
                 const modal = new bootstrap.Modal(document.getElementById('jsonModal'));
                 const jsonContent = document.getElementById('jsonContent');
-                jsonContent.innerHTML = createSkillDetailsHtml(skill); // 使用新的HTML生成函数
+                jsonContent.textContent = JSON.stringify(skill, null, 2);
                 document.getElementById('jsonModalLabel').textContent = `${skill.name || id} - 武学详情`;
                 
                 try {
@@ -431,20 +431,4 @@ export function updateSkillList(skillData, matchesFilters) {
     });
 
     return { filteredCount, totalCount };
-}
-
-// 新增函数：将技能详情转换为HTML
-function createSkillDetailsHtml(skill) {
-    let html = '<div class="skill-details-list">';
-    for (const [key, value] of Object.entries(skill)) {
-        if (key === 'zhaoJiaDefDamageClass') { // 处理武学属性字段
-            html += `<div class="skill-attribute"><strong>${key}:</strong> ${getElementName(value)}</div>`;
-        } else if (typeof value === 'object' && value !== null) {
-            html += `<div class="skill-attribute"><strong>${key}:</strong> <pre>${JSON.stringify(value, null, 2)}</pre></div>`;
-        } else {
-            html += `<div class="skill-attribute"><strong>${key}:</strong> ${value}</div>`;
-        }
-    }
-    html += '</div>';
-    return html;
 }
