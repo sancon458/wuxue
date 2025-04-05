@@ -4,41 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>隐脉查询系统</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="extern/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
-    <style>
-        .dropdown-menu {
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        /* 添加样式以美化段落 */
-        .mb-3 p {
-            margin-bottom: 0.5rem;
-        }
-        /* 新增样式以美化玄络展示 */
-        .meridian-link {
-            border: 1px solid #ccc;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-radius: 0.25rem;
-        }
-        .meridian-link h6 {
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-        }
-        .meridian-link p {
-            margin-left: 1rem;
-        }
-    </style>
+    <script src="extern/bootstrap.bundle.min.js"></script>
+    <script type="module" src="js/modules/yinmai/yinmai.js"></script>
+    <script type="module" src="js/base.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="page-header text-center d-flex justify-content-between align-items-center">
             <h1>隐脉查询系统</h1>
-            <span class="option-btn" onclick="toggleOptionMenu(event)">☰</span>
+            <span class="option-btn" id="optionBtn" style="margin-right: 10px;">☰</span>
             <div class="option-menu" id="optionMenu">
                 <a href="index.html">武学查询</a>
                 <a href="yinmai.html">隐脉查询</a>
+                <a href="calc.html">气血计算</a>
             </div>
         </div>
 
@@ -78,25 +58,7 @@
             </div>
         </div>
 
-        <script>
-            function toggleOptionMenu(event) {
-                const menu = document.getElementById('optionMenu');
-                const buttonRect = event.target.getBoundingClientRect();
-                menu.style.left = `${buttonRect.right - menu.offsetWidth}px`;
-                menu.style.top = `${buttonRect.bottom}px`;
-                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-            }
-
-            // 手动初始化Bootstrap的下拉组件
-            document.addEventListener('DOMContentLoaded', function () {
-                var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
-                dropdownElementList.map(function (dropdownToggleEl) {
-                    return new bootstrap.Dropdown(dropdownToggleEl)
-                })
-            });
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script type="module" src="js/modules/yinmai/yinmai.js"></script>
+       
     </div>
 </body>
 </html>

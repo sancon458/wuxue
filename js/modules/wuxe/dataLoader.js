@@ -1,4 +1,4 @@
-import * as pako from 'https://cdn.jsdelivr.net/npm/pako@2.0.4/+esm';
+import * as pako from '../../../extern/pako_2.0.4_esm.js';
 // 数据加载模块
 export let skillData = {
     "正气需求": [],
@@ -110,7 +110,7 @@ export function getElementName(elementId) {
         "3": "阳性",
         "5": "阴性",
         "7": "混元",
-        "9": "外功",
+        "9": "外功"
     };
     return elementname[elementId] || elementId;
 }

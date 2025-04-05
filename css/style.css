@@ -287,3 +287,25 @@ pre {
 .option-menu a:hover {
     background-color: #f1f1f1;
 }
+.dropdown-menu {
+    max-height: 200px;
+    overflow-y: auto;
+}
+/* 添加样式以美化段落 */
+.mb-3 p {
+    margin-bottom: 0.5rem;
+}
+/* 新增样式以美化玄络展示 */
+.meridian-link {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.25rem;
+}
+.meridian-link h6 {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+.meridian-link p {
+    margin-left: 1rem;
+}

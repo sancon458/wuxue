@@ -4,6 +4,14 @@ let acupointConfig = {};
 let meridianMap = {};
 let meridianLinkConfig = {};
 
+// 手动初始化Bootstrap的下拉组件
+document.addEventListener('DOMContentLoaded', function () {
+    var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+    dropdownElementList.map(function (dropdownToggleEl) {
+        return new bootstrap.Dropdown(dropdownToggleEl)
+    })
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     Promise.all([
         fetch('data/MeridianMapConfig.json.gz')
