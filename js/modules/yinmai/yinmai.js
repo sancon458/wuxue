@@ -1,4 +1,4 @@
-import * as pako from 'https://cdn.jsdelivr.net/npm/pako@2.0.4/+esm';
+import * as pako from '../../../extern/pako_2.0.4_esm.js';
 
 let acupointConfig = {};
 let meridianMap = {};

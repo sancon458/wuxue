@@ -9,9 +9,6 @@
     <script src="extern/bootstrap.bundle.min.js"></script>
     <script type="module" src="js/modules/calc/calc.js"></script>
     <script type="module" src="js/base.js"></script>
-    <!-- 引入 MathJax -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <div class="container">
@@ -24,6 +21,34 @@
                 <a href="calc.html">气血计算</a>
             </div>
         </div>
+        <form id="calcForm">
+            <div class="mb-3">
+                <label for="prepSkillLevel" class="form-label">准备武学等级</label>
+                <input type="number" class="form-control" id="prepSkillLevel" required value="1650">
+            </div>
+            <div class="mb-3">
+                <label for="maxNeili" class="form-label">当前内力上限</label>
+                <input type="number" class="form-control" id="maxNeili" required value="42000">
+            </div>
+            <div class="mb-3">
+                <label for="characterExp" class="form-label">人物经验</label>
+                <input type="number" class="form-control" id="characterExp" required value="600000000">
+            </div>
+            <div class="mb-3">
+                <label for="effectiveArmStrength" class="form-label">有效臂力</label>
+                <input type="number" class="form-control" id="effectiveArmStrength" required value="255">
+            </div>
+            <div class="mb-3">
+                <label for="powerValue" class="form-label">加力值</label>
+                <input type="number" class="form-control" id="powerValue" required value="825">
+            </div>
+            <div class="mb-3">
+                <label for="opponentDefense" class="form-label">对手防御力</label>
+                <input type="number" class="form-control" id="opponentDefense" required value="25000">
+            </div>
+            <button type="submit" class="btn btn-primary">计算</button>
+        </form>
+        <div id="result"></div>
     </div>
 </body>
 </html>
