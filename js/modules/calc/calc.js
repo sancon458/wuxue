@@ -87,6 +87,95 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
     return { averageQixueDamage, panelAttack, avgAtk, avgDuration };
 }
 
+function categorizeSkillsByMethod(skills) {
+    const categorizedSkills = {};
+    skills.forEach(skill => {
+        if (!String(skill.methods).includes(',')) {
+            return;
+        }
+        const methods = skill.methods.split(',').map(Number);
+        methods.forEach(methodId => {
+            const methodName = getMethodName(methodId);
+            if (!categorizedSkills[methodName]) {
+                categorizedSkills[methodName] = [];
+            }
+            categorizedSkills[methodName].push(skill);
+        });
+    });
+    return categorizedSkills;
+}
+
+document.getElementById('calcForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const prepSkillLevel = parseFloat(document.getElementById('prepSkillLevel').value);
+    const maxNeili = parseFloat(document.getElementById('maxNeili').value);
+    const characterExp = parseFloat(document.getElementById('characterExp').value);
+    const effectiveArmStrength = parseFloat(document.getElementById('effectiveArmStrength').value);
+    const powerValue = parseFloat(document.getElementById('powerValue').value);
+    const opponentDefense = parseFloat(document.getElementById('opponentDefense').value);
+
+    let results = [];
+    Object.keys(skillData.skills).forEach(skillId => {
+        const passiveSkills = skillAutoData[skillId];
+        if (passiveSkills) {
+            let { averageQixueDamage, panelAttack, avgAtk, avgDuration } = calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, powerValue, opponentDefense);
+            results.push({
+                skillId: skillId,
+                name: skillData.skills[skillId].name || skillId,
+                methods: skillData.skills[skillId].methods,
+                averageQixueDamage: parseFloat(averageQixueDamage),
+                panelAttack: parseFloat(panelAttack),
+                avgAtk: parseFloat(avgAtk),
+                avgDuration: parseFloat(avgDuration)
+            });
+        }
+    });
+
+    // 按照 averageQixueDamage 降序排序
+    results.sort((a, b) => b.averageQixueDamage - a.averageQixueDamage);
+
+    const categorizedSkills = categorizeSkillsByMethod(results);
+
+    // 创建标签页和内容
+    const tabContainer = document.getElementById('tabContainer');
+    const tabContentContainer = document.getElementById('tabContentContainer');
+    tabContainer.innerHTML = ''; // 清空现有标签页
+    tabContentContainer.innerHTML = ''; // 清空现有内容
+
+    Object.keys(categorizedSkills).forEach((methodName, index) => {
+        // 创建标签页
+        const tab = document.createElement('li');
+        tab.className = 'nav-item';
+        const tabLink = document.createElement('a');
+        tabLink.className = `nav-link ${index === 0 ? 'active' : ''}`;
+        tabLink.id = `${methodName}-tab`;
+        tabLink.setAttribute('data-bs-toggle', 'tab');
+        tabLink.setAttribute('href', `#${methodName}`);
+        tabLink.setAttribute('role', 'tab');
+        tabLink.setAttribute('aria-controls', methodName);
+        tabLink.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+        tabLink.textContent = methodName;
+        tab.appendChild(tabLink);
+        tabContainer.appendChild(tab);
+
+        // 创建标签页内容
+        const tabContent = document.createElement('div');
+        tabContent.className = `tab-pane fade ${index === 0 ? 'show active' : ''}`;
+        tabContent.id = methodName;
+        tabContent.setAttribute('role', 'tabpanel');
+        tabContent.setAttribute('aria-labelledby', `${methodName}-tab`);
+
+        categorizedSkills[methodName].forEach(result => {
+            const skillElement = document.createElement('div');
+            skillElement.className = 'skill-item';
+            skillElement.innerHTML = `<p>武学: ${result.name}, 平均气血伤害: ${result.averageQixueDamage}, 面板攻击: ${result.panelAttack}, 平均招式攻击系数: ${result.avgAtk}, 平均招式前后摇: ${result.avgDuration}(攻击一次消耗${(result.avgDuration/3).toFixed(2)}管黄条)</p>`;
+            tabContent.appendChild(skillElement);
+        });
+
+        tabContentContainer.appendChild(tabContent);
+    });
+});
+
 async function init() {
     try {
         // 加载技能数据
@@ -96,44 +185,26 @@ async function init() {
         skillAutoData = await loadSkillAutoData();
 
         // 添加表单提交事件监听器
-        document.getElementById('calcForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const prepSkillLevel = parseFloat(document.getElementById('prepSkillLevel').value);
-            const maxNeili = parseFloat(document.getElementById('maxNeili').value);
-            const characterExp = parseFloat(document.getElementById('characterExp').value);
-            const effectiveArmStrength = parseFloat(document.getElementById('effectiveArmStrength').value);
-            const powerValue = parseFloat(document.getElementById('powerValue').value);
-            const opponentDefense = parseFloat(document.getElementById('opponentDefense').value);
-
-            let results = [];
-            Object.keys(skillData.skills).forEach(skillId => {
-                const passiveSkills = skillAutoData[skillId];
-                if (passiveSkills) {
-                    let { averageQixueDamage, panelAttack, avgAtk, avgDuration } = calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, powerValue, opponentDefense);
-                    results.push({
-                        skillId: skillId,
-                        name: skillData.skills[skillId].name || skillId,
-                        averageQixueDamage: parseFloat(averageQixueDamage),
-                        panelAttack: parseFloat(panelAttack),
-                        avgAtk: parseFloat(avgAtk),
-                        avgDuration: parseFloat(avgDuration)
-                    });
-                }
-            });
-
-            // 按照 averageQixueDamage 降序排序
-            results.sort((a, b) => b.averageQixueDamage - a.averageQixueDamage);
-
-            let resultHtml = '<h2>计算结果</h2>';
-            results.forEach(result => {
-                resultHtml += `<p>武学: ${result.name}, 平均气血伤害: ${result.averageQixueDamage}, 面板攻击: ${result.panelAttack}, 平均招式攻击系数: ${result.avgAtk}, 平均招式前后摇: ${result.avgDuration}(攻击一次消耗${(result.avgDuration/3).toFixed(2)}管黄条)</p>`;
-            });
-
-            document.getElementById('result').innerHTML = resultHtml;
-        });
     } catch (error) {
         console.error('Error initializing page:', error);
     }
+}
+
+function getMethodName(methodId) {
+    const methodNames = {
+        "1": "拳脚",
+        "2": "内功",
+        "3": "轻功",
+        "4": "招架",
+        "5": "剑法",
+        "6": "刀法",
+        "7": "棍法",
+        "8": "暗器",
+        "9": "鞭法",
+        "10": "双持",
+        "11": "乐器"
+    };
+    return methodNames[methodId] || methodId;
 }
 
 init();

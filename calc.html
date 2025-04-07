@@ -21,34 +21,51 @@
                 <a href="calc.html">气血计算</a>
             </div>
         </div>
+
         <form id="calcForm">
             <div class="mb-3">
-                <label for="prepSkillLevel" class="form-label">准备武学等级</label>
+                <label for="prepSkillLevel" class="form-label">准备技能等级</label>
                 <input type="number" class="form-control" id="prepSkillLevel" required value="1650">
             </div>
             <div class="mb-3">
-                <label for="maxNeili" class="form-label">当前内力上限</label>
+                <label for="maxNeili" class="form-label">最大内力</label>
                 <input type="number" class="form-control" id="maxNeili" required value="42000">
             </div>
             <div class="mb-3">
-                <label for="characterExp" class="form-label">人物经验</label>
+                <label for="characterExp" class="form-label">角色经验</label>
                 <input type="number" class="form-control" id="characterExp" required value="600000000">
             </div>
             <div class="mb-3">
                 <label for="effectiveArmStrength" class="form-label">有效臂力</label>
-                <input type="number" class="form-control" id="effectiveArmStrength" required value="255">
+                <input type="number" class="form-control" id="effectiveArmStrength" required value="230">
             </div>
             <div class="mb-3">
-                <label for="powerValue" class="form-label">加力值</label>
+                <label for="powerValue" class="form-label">加力值<label>
                 <input type="number" class="form-control" id="powerValue" required value="825">
             </div>
             <div class="mb-3">
-                <label for="opponentDefense" class="form-label">对手防御力</label>
+                <label for="opponentDefense" class="form-label">对手防御</label>
                 <input type="number" class="form-control" id="opponentDefense" required value="25000">
             </div>
             <button type="submit" class="btn btn-primary">计算</button>
         </form>
-        <div id="result"></div>
+
+        <div class="mt-3">
+            <ul class="nav nav-tabs" id="tabContainer" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="tab1-tab" data-bs-toggle="tab" data-bs-target="#tab1" type="button" role="tab" aria-controls="tab1" aria-selected="true">气血计算</button>
+                </li>
+                
+            </ul>
+            <div class="tab-content" id="tabContentContainer">
+                <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+                    <div id="result"></div>
+                </div>
+                <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
+                    <div id="result2"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
