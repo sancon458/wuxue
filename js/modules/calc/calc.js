@@ -59,16 +59,15 @@ function calcPassive(skillId, skillAutoData) {
         count++;
     });
 
-    const avgAtk = count > 0 ? (totalAtk / count).toFixed(2) : 0;
-    const avgDuration = count > 0 ? (totalDuration / count).toFixed(2) : 0;
-
+    let avgAtk = count > 0 ? (totalAtk / count).toFixed(2) : 0;
+    let avgDuration = count > 0 ? (totalDuration / count).toFixed(2) : 0;
     return { avgAtk, avgDuration };
 }
 
 function calculatePanelAttack(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, powerValue) {
     const attackCoefficient = skillData.skills[skillId].atk; 
     const powerAttackCoefficient = skillData.skills[skillId].powerAtkRate; 
-    // const panelAttack = (prepSkillLevel * 0.03 * attackCoefficient + maxNeili / 20 + 10 + Math.pow(characterExp, 0.4)) * (1 + 0.02 * effectiveArmStrength) + powerValue * powerAttackCoefficient * (1 + prepSkillLevel / 500) * (0.001 * effectiveArmStrength + 0.49);
+
     let panelAttack = (prepSkillLevel * 0.03 * attackCoefficient + maxNeili / 20 + 10 + Math.pow(characterExp, 0.4))
     panelAttack = panelAttack * (1 + 0.02 * effectiveArmStrength)
     panelAttack = panelAttack + powerValue * powerAttackCoefficient * (1 + prepSkillLevel / 500) * (0.001 * effectiveArmStrength + 0.49);
@@ -77,25 +76,39 @@ function calculatePanelAttack(skillId, prepSkillLevel, maxNeili, characterExp, e
 
 function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, powerValue, opponentDefense) {
     let { avgAtk, avgDuration } = calcPassive(skillId, skillAutoData);
-    let damageRate = skillData.skills[skillId].damRate;
+    avgAtk = parseFloat(avgAtk);
+    avgDuration = parseFloat(avgDuration);
+    let damageRate = parseFloat(skillData.skills[skillId].damRate);
     let panelAttack = calculatePanelAttack(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, powerValue);
+    panelAttack = parseFloat(panelAttack);
     let skillAttackAbility = 8 * (damageRate + (panelAttack * (1 + avgAtk) * damageRate) / 1000);
+    skillAttackAbility = parseFloat(skillAttackAbility);
     let averageQixueDamage = skillAttackAbility * (1000 / (1000 + opponentDefense));
+    averageQixueDamage = parseFloat(averageQixueDamage);
+    let atkSpeed = parseFloat(3 / avgDuration);
+    let dps = parseFloat(averageQixueDamage * atkSpeed);
+
     averageQixueDamage = averageQixueDamage.toFixed(2);
-    panelAttack = panelAttack.toFixed(2);
-    let dps = ((averageQixueDamage * 3) / avgDuration).toFixed(2);
-    return { averageQixueDamage, panelAttack, avgAtk, avgDuration, dps };
+    panelAttack = panelAttack.toFixed(2);  
+    avgAtk = avgAtk.toFixed(2);
+    avgDuration = avgDuration.toFixed(2);
+    atkSpeed = atkSpeed.toFixed(2);
+    dps = dps.toFixed(2);
+
+    return { averageQixueDamage, panelAttack, avgAtk, avgDuration, atkSpeed, dps };
 }
 
 function categorizeSkillsByMethod(skills) {
     const categorizedSkills = {};
     skills.forEach(skill => {
-        if (!String(skill.methods).includes(',')) {
-            return;
-        }
-        const methods = skill.methods.split(',').map(Number);
+        const methods = String(skill.methods).includes(',') 
+                        ? skill.methods.split(',').map(Number) 
+                        : [Number(skill.methods)];
         methods.forEach(methodId => {
             const methodName = getMethodName(methodId);
+            if (methodName === '招架') {
+                return;
+            }
             if (!categorizedSkills[methodName]) {
                 categorizedSkills[methodName] = [];
             }
@@ -107,40 +120,46 @@ function categorizeSkillsByMethod(skills) {
 
 document.getElementById('calcForm').addEventListener('submit', function(event) {
     event.preventDefault();
-    const prepSkillLevel = parseFloat(document.getElementById('prepSkillLevel').value);
-    const maxNeili = parseFloat(document.getElementById('maxNeili').value);
-    const characterExp = parseFloat(document.getElementById('characterExp').value);
-    const effectiveArmStrength = parseFloat(document.getElementById('effectiveArmStrength').value);
-    const powerValue = parseFloat(document.getElementById('powerValue').value);
-    const opponentDefense = parseFloat(document.getElementById('opponentDefense').value);
+    const prepSkillLevel = parseFloat(document.getElementById('prepSkillLevel').value) || 0;
+    const maxNeili = parseFloat(document.getElementById('maxNeili').value) || 0;
+    const characterExp = parseFloat(document.getElementById('characterExp').value) || 0;
+    const effectiveArmStrength = parseFloat(document.getElementById('effectiveArmStrength').value) || 0;
+    const powerValue = parseFloat(document.getElementById('powerValue').value) || 0;
+    const opponentDefense = parseFloat(document.getElementById('opponentDefense').value) || 0;
     const sortOrder = document.getElementById('sortOrder').value;
 
     let results = [];
     Object.keys(skillData.skills).forEach(skillId => {
         const passiveSkills = skillAutoData[skillId];
         if (passiveSkills) {
-            let { averageQixueDamage, panelAttack, avgAtk, avgDuration, dps} = calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, powerValue, opponentDefense);
+            let { averageQixueDamage, panelAttack, avgAtk, avgDuration, atkSpeed, dps} = calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, powerValue, opponentDefense);
             results.push({
                 skillId: skillId,
-                name: skillData.skills[skillId].name || skillId,
+                name: skillData.skills[skillId].name 
+                    ? `${skillData.skills[skillId].name} ${skillId.match(/\d+/)?.[0] || ''}`
+                    : `${skillId} ${skillId.match(/\d+/)?.[0] || ''}`,
                 methods: skillData.skills[skillId].methods,
-                averageQixueDamage: parseFloat(averageQixueDamage),
-                panelAttack: parseFloat(panelAttack),
-                avgAtk: parseFloat(avgAtk),
-                avgDuration: parseFloat(avgDuration),
-                dps: parseFloat(dps)
+                averageQixueDamage: averageQixueDamage,
+                panelAttack: panelAttack,
+                avgAtk: avgAtk,
+                avgDuration: avgDuration,
+                atkSpeed: atkSpeed,
+                dps: dps
             });
         }
     });
 
-    // 根据选择的排序方式进行排序
-    if (sortOrder === 'qixueDamage') {
-        results.sort((a, b) => b.averageQixueDamage - a.averageQixueDamage);
-    } else if (sortOrder === 'dps') {
-        results.sort((a, b) => b.dps - a.dps);
-    }
-
     const categorizedSkills = categorizeSkillsByMethod(results);
+    
+    // 根据选择的排序方式进行排序
+    Object.keys(categorizedSkills).forEach(methodName => {
+        if (sortOrder === 'qixueDamage') {
+            categorizedSkills[methodName].sort((a, b) => b.averageQixueDamage - a.averageQixueDamage);
+        } else if (sortOrder === 'dps') {
+            categorizedSkills[methodName].sort((a, b) => b.dps - a.dps);
+        }
+    });
+    
 
     // 创建标签页和内容
     const tabContainer = document.getElementById('tabContainer');
@@ -171,13 +190,68 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
         tabContent.setAttribute('role', 'tabpanel');
         tabContent.setAttribute('aria-labelledby', `${methodName}-tab`);
 
-        categorizedSkills[methodName].forEach(result => {
-            const skillElement = document.createElement('div');
-            skillElement.className = 'skill-item border p-2 mb-2'; // 添加边框和内边距
-            skillElement.innerHTML = `武学: ${result.name}, 平均气血伤害: ${result.averageQixueDamage}, 面板攻击: ${result.panelAttack}, 平均招式攻击系数: ${result.avgAtk}, 前后摇: ${result.avgDuration}(${(result.avgDuration/3).toFixed(2)}管黄条/攻击), 秒伤: ${result.dps}<br>`;
-            tabContent.appendChild(skillElement);
-        });
+        // 创建表格
+        const table = document.createElement('table');
+        table.className = 'table table-striped';
 
+        // 创建表头
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        const headers = [
+            '武学',
+            '平均气血伤害',
+            '面板攻击',
+            '均攻击系数',
+            '前后摇',
+            '攻速',
+            '秒伤'
+        ];
+        headers.forEach(headerText => {
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // 创建表格主体
+        const tbody = document.createElement('tbody');
+        categorizedSkills[methodName].forEach(result => {
+            const row = document.createElement('tr');
+
+            const nameCell = document.createElement('td');
+            nameCell.textContent = result.name;
+            row.appendChild(nameCell);
+
+            const averageQixueDamageCell = document.createElement('td');
+            averageQixueDamageCell.textContent = result.averageQixueDamage;
+            row.appendChild(averageQixueDamageCell);
+
+            const panelAttackCell = document.createElement('td');
+            panelAttackCell.textContent = result.panelAttack;
+            row.appendChild(panelAttackCell);
+
+            const avgAtkCell = document.createElement('td');
+            avgAtkCell.textContent = result.avgAtk;
+            row.appendChild(avgAtkCell);
+
+            const avgDurationCell = document.createElement('td');
+            avgDurationCell.textContent = result.avgDuration;
+            row.appendChild(avgDurationCell);
+
+            const atkSpeedCell = document.createElement('td');
+            atkSpeedCell.textContent = result.atkSpeed;
+            row.appendChild(atkSpeedCell);
+
+            const dpsCell = document.createElement('td');
+            dpsCell.textContent = result.dps;
+            row.appendChild(dpsCell);
+
+            tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+
+        tabContent.appendChild(table);
         tabContentContainer.appendChild(tabContent);
     });
 });
