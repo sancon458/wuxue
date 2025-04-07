@@ -309,3 +309,15 @@ pre {
 .meridian-link p {
     margin-left: 1rem;
 }
+.dropdown-toggle::after {
+    content: none;
+}
+
+.dropdown-toggle::before {
+    content: '\25BC'; /* 下拉箭头 */
+    float: right;
+    margin-left: 0.25rem;
+    font-size: 0.625em;
+    line-height: 0;
+    vertical-align: middle;
+}

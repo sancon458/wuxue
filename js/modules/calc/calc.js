@@ -3,6 +3,16 @@ import * as pako from '../../../extern/pako_2.0.4_esm.js';
 let skillData = null;
 let skillAutoData = null;
 
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.dropdown-item').forEach(item => {
+        item.addEventListener('click', function(event) {
+            event.preventDefault();
+            const selectedValue = this.getAttribute('data-value');
+            document.getElementById('dropdownMenuButton').textContent = this.textContent;
+            document.getElementById('sortOrder').value = selectedValue;
+        });
+    });
+});
 // 从JSON文件加载数据
 async function loadSkillData() {
     try {
@@ -198,6 +208,7 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
         const headers = [
+            '排位',
             '武学',
             '平均气血伤害',
             '面板攻击',
@@ -214,10 +225,18 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
         thead.appendChild(headerRow);
         table.appendChild(thead);
 
+        // 计数器
+        let count = 0;
+
         // 创建表格主体
         const tbody = document.createElement('tbody');
         categorizedSkills[methodName].forEach(result => {
+            count++;
             const row = document.createElement('tr');
+
+            const ranlCell = document.createElement('td');
+            ranlCell.textContent = count;
+            row.appendChild(ranlCell);
 
             const nameCell = document.createElement('td');
             nameCell.textContent = result.name;

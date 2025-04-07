@@ -62,10 +62,16 @@
             <div class="mb-3 row g-3">
                 <label for="sortOrder" class="col-form-label col-sm-2">排序方式</label>
                 <div class="col-sm-10">
-                    <select class="form-select" id="sortOrder" required>
-                        <option value="qixueDamage">气血伤害排序</option>
-                        <option value="dps">秒伤排序</option>
-                    </select>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            气血伤害排序
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" href="#" data-value="qixueDamage">气血伤害排序</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="dps">秒伤排序</a></li>
+                        </ul>
+                    </div>
+                    <input type="hidden" id="sortOrder" name="sortOrder" value="qixueDamage">
                 </div>
             </div>
             <button type="submit" class="btn btn-primary">计算</button>
