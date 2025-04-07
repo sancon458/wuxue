@@ -83,8 +83,8 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
     let averageQixueDamage = skillAttackAbility * (1000 / (1000 + opponentDefense));
     averageQixueDamage = averageQixueDamage.toFixed(2);
     panelAttack = panelAttack.toFixed(2);
-    
-    return { averageQixueDamage, panelAttack, avgAtk, avgDuration };
+    let dps = ((averageQixueDamage * 3) / avgDuration).toFixed(2);
+    return { averageQixueDamage, panelAttack, avgAtk, avgDuration, dps };
 }
 
 function categorizeSkillsByMethod(skills) {
@@ -113,12 +113,13 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
     const effectiveArmStrength = parseFloat(document.getElementById('effectiveArmStrength').value);
     const powerValue = parseFloat(document.getElementById('powerValue').value);
     const opponentDefense = parseFloat(document.getElementById('opponentDefense').value);
+    const sortOrder = document.getElementById('sortOrder').value;
 
     let results = [];
     Object.keys(skillData.skills).forEach(skillId => {
         const passiveSkills = skillAutoData[skillId];
         if (passiveSkills) {
-            let { averageQixueDamage, panelAttack, avgAtk, avgDuration } = calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, powerValue, opponentDefense);
+            let { averageQixueDamage, panelAttack, avgAtk, avgDuration, dps} = calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, powerValue, opponentDefense);
             results.push({
                 skillId: skillId,
                 name: skillData.skills[skillId].name || skillId,
@@ -126,13 +127,18 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
                 averageQixueDamage: parseFloat(averageQixueDamage),
                 panelAttack: parseFloat(panelAttack),
                 avgAtk: parseFloat(avgAtk),
-                avgDuration: parseFloat(avgDuration)
+                avgDuration: parseFloat(avgDuration),
+                dps: parseFloat(dps)
             });
         }
     });
 
-    // 按照 averageQixueDamage 降序排序
-    results.sort((a, b) => b.averageQixueDamage - a.averageQixueDamage);
+    // 根据选择的排序方式进行排序
+    if (sortOrder === 'qixueDamage') {
+        results.sort((a, b) => b.averageQixueDamage - a.averageQixueDamage);
+    } else if (sortOrder === 'dps') {
+        results.sort((a, b) => b.dps - a.dps);
+    }
 
     const categorizedSkills = categorizeSkillsByMethod(results);
 
@@ -167,8 +173,8 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
 
         categorizedSkills[methodName].forEach(result => {
             const skillElement = document.createElement('div');
-            skillElement.className = 'skill-item';
-            skillElement.innerHTML = `<p>武学: ${result.name}, 平均气血伤害: ${result.averageQixueDamage}, 面板攻击: ${result.panelAttack}, 平均招式攻击系数: ${result.avgAtk}, 平均招式前后摇: ${result.avgDuration}(攻击一次消耗${(result.avgDuration/3).toFixed(2)}管黄条)</p>`;
+            skillElement.className = 'skill-item border p-2 mb-2'; // 添加边框和内边距
+            skillElement.innerHTML = `武学: ${result.name}, 平均气血伤害: ${result.averageQixueDamage}, 面板攻击: ${result.panelAttack}, 平均招式攻击系数: ${result.avgAtk}, 前后摇: ${result.avgDuration}(${(result.avgDuration/3).toFixed(2)}管黄条/攻击), 秒伤: ${result.dps}<br>`;
             tabContent.appendChild(skillElement);
         });
 

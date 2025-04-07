@@ -22,30 +22,51 @@
             </div>
         </div>
 
-        <form id="calcForm">
-            <div class="mb-3">
-                <label for="prepSkillLevel" class="form-label">准备技能等级</label>
-                <input type="number" class="form-control" id="prepSkillLevel" required value="1650">
+        <form id="calcForm" class="form-inline">
+            <div class="mb-3 row g-3">
+                <label for="prepSkillLevel" class="col-form-label col-sm-2">准备技能等级</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="prepSkillLevel" required value="1650">
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="maxNeili" class="form-label">最大内力</label>
-                <input type="number" class="form-control" id="maxNeili" required value="42000">
+            <div class="mb-3 row g-3">
+                <label for="maxNeili" class="col-form-label col-sm-2">最大内力</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="maxNeili" required value="42000">
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="characterExp" class="form-label">角色经验</label>
-                <input type="number" class="form-control" id="characterExp" required value="600000000">
+            <div class="mb-3 row g-3">
+                <label for="characterExp" class="col-form-label col-sm-2">角色经验</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="characterExp" required value="600000000">
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="effectiveArmStrength" class="form-label">有效臂力</label>
-                <input type="number" class="form-control" id="effectiveArmStrength" required value="230">
+            <div class="mb-3 row g-3">
+                <label for="effectiveArmStrength" class="col-form-label col-sm-2">有效臂力</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="effectiveArmStrength" required value="230">
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="powerValue" class="form-label">加力值<label>
-                <input type="number" class="form-control" id="powerValue" required value="825">
+            <div class="mb-3 row g-3">
+                <label for="powerValue" class="col-form-label col-sm-2">加力值</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="powerValue" required value="825">
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="opponentDefense" class="form-label">对手防御</label>
-                <input type="number" class="form-control" id="opponentDefense" required value="25000">
+            <div class="mb-3 row g-3">
+                <label for="opponentDefense" class="col-form-label col-sm-2">对手防御</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="opponentDefense" required value="25000">
+                </div>
+            </div>
+            <div class="mb-3 row g-3">
+                <label for="sortOrder" class="col-form-label col-sm-2">排序方式</label>
+                <div class="col-sm-10">
+                    <select class="form-select" id="sortOrder" required>
+                        <option value="qixueDamage">气血伤害排序</option>
+                        <option value="dps">秒伤排序</option>
+                    </select>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary">计算</button>
         </form>
