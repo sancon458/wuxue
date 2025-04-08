@@ -87,7 +87,7 @@
             <div class="mb-3 row g-3">
                 <label for="opponentDefense" class="col-form-label col-sm-2">对手防御</label>
                 <div class="col-sm-10">
-                    <input type="number" class="form-control" id="opponentDefense" required value="25000">
+                    <input type="number" class="form-control" id="opponentDefense" required value="20000">
                 </div>
             </div>
             <div class="mb-3 row g-3">
@@ -97,18 +97,42 @@
                 </div>
             </div>
             <div class="mb-3 row g-3">
+                <label for="dodgeValue" class="col-form-label col-sm-2">对手闪避力</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="dodgeValue" required value="18000">
+                </div>
+            </div>
+            <div class="mb-3 row g-3">
+                <label for="parryLv" class="col-form-label col-sm-2">对手准备招架等级</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="parryLv" required value="1650">
+                </div>
+            </div>
+            <div class="mb-3 row g-3">
+                <label for="parryFactor" class="col-form-label col-sm-2">对手准备招架系数</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="parryFactor" required value="85">
+                </div>
+            </div>
+            <div class="mb-3 row g-3">
+                <label for="enemyExp" class="col-form-label col-sm-2">对手经验</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="enemyExp" required value="600000000">
+                </div>
+            </div>
+            <div class="mb-3 row g-3">
                 <label for="sortOrder" class="col-form-label col-sm-2">排序方式</label>
                 <div class="col-sm-10">
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            气血伤害排序
+                            秒伤排序
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" href="#" data-value="qixueDamage">气血伤害排序</a></li>
                             <li><a class="dropdown-item" href="#" data-value="dps">秒伤排序</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="qixueDamage">气血伤害排序</a></li>
                         </ul>
                     </div>
-                    <input type="hidden" id="sortOrder" name="sortOrder" value="qixueDamage">
+                    <input type="hidden" id="sortOrder" name="sortOrder" value="dps">
                 </div>
             </div>
             <button type="submit" class="btn btn-primary">计算</button>

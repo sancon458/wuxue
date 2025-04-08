@@ -110,16 +110,27 @@ export function showPassiveSkills(skillId, skillAutoData) {
     let html = '';
     let totalAtk = 0;
     let totalDuration = 0;
+    let totalDam = 0;
+    let totalZhaoHitRate = 0;
     let count = 0;
 
     Object.values(passiveSkills).forEach(skill => {
         totalAtk += skill.atk || 0;
+        totalDam += skill.dam || 0;
+        totalZhaoHitRate += skill.hitRate || 0;
         totalDuration += (skill.preDuration || 0) + (skill.aftDuration || 0);
         count++;
     });
 
-    const avgAtk = count > 0 ? (totalAtk / count).toFixed(2) : 0;
-    const avgDuration = count > 0 ? (totalDuration / count).toFixed(2) : 0;
+    let avgAtk = count > 0 ? (totalAtk / count) : 0;
+    let avgDuration = count > 0 ? (totalDuration / count) : 0;
+    let avgDam = count > 0 ? (totalDam / count) : 0;
+    let avgHitRate = count > 0 ? (totalZhaoHitRate / count) : 0;
+
+    avgAtk = avgAtk.toFixed(2);
+    avgDuration = avgDuration.toFixed(2);
+    avgDam = avgDam.toFixed(2);
+    avgHitRate = avgHitRate.toFixed(2);
 
     html += `
     <div class="mb-3">
@@ -129,6 +140,8 @@ export function showPassiveSkills(skillId, skillAutoData) {
         <h5>技能基础数据</h5>
         <p>招式平均攻击系数: ${avgAtk}</p>
         <p>招式平均前后摇: ${avgDuration}</p>
+        <p>招式平均伤害力: ${avgDam}</p>
+        <p>招式平均命中率: ${avgHitRate}</p>
         <div class="table-responsive">
             <table class="table table-sm table-hover">
                 <thead>
@@ -136,7 +149,9 @@ export function showPassiveSkills(skillId, skillAutoData) {
                         <th>技能效果</th>
                         <th>描述</th>
                         <th>攻击系数</th>
-                        <th>伤害系数</th>
+                        <th>伤害力</th>
+                        <th>命中率</th>
+                        <th>前后摇</th>
                         <th>伤害类型</th>
                         <th>解锁等级</th>
                     </tr>
@@ -150,6 +165,8 @@ export function showPassiveSkills(skillId, skillAutoData) {
             <td>${skill.action}</td>
             <td>${skill.atk || 0}</td>
             <td>${skill.dam || 0}</td>
+            <td>${skill.hitRate || 0}</td>
+            <td>${(skill.preDuration+skill.aftDuration).toFixed(2) || 0}</td>
             <td>${skill.damageType}</td>
             <td>${skill.lv}</td>
         </tr>`;

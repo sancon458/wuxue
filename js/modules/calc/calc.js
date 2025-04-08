@@ -62,11 +62,13 @@ function calcPassive(skillId, skillAutoData) {
     let totalAtk = 0;
     let totalDuration = 0;
     let totalDam = 0;
+    let totalZhaoHitRate = 0;
     let count = 0;
 
     Object.values(passiveSkills).forEach(skill => {
         totalAtk += skill.atk || 0;
         totalDam += skill.dam || 0;
+        totalZhaoHitRate += skill.hitRate || 0;
         totalDuration += (skill.preDuration || 0) + (skill.aftDuration || 0);
         count++;
     });
@@ -74,12 +76,14 @@ function calcPassive(skillId, skillAutoData) {
     let avgAtk = count > 0 ? (totalAtk / count) : 0;
     let avgDuration = count > 0 ? (totalDuration / count) : 0;
     let avgDam = count > 0 ? (totalDam / count) : 0;
+    let avgHitRate = count > 0 ? (totalZhaoHitRate / count) : 0;
 
     avgAtk = typeof avgAtk === 'string' ? parseFloat(avgAtk) : avgAtk;
     avgDuration = typeof avgDuration === 'string' ? parseFloat(avgDuration) : avgDuration;
     avgDam = typeof avgDam === 'string' ? parseFloat(avgDam) : avgDam;
+    avgHitRate = typeof avgHitRate === 'string' ? parseFloat(avgHitRate) : avgHitRate;
 
-    return { avgAtk, avgDuration, avgDam };
+    return { avgAtk, avgDuration, avgDam, avgHitRate};
 }
 
 function calculatePanelAttack(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, powerValue) {
@@ -95,7 +99,7 @@ function calculatePanelAttack(skillId, prepSkillLevel, maxNeili, characterExp, e
 }
 
 function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, powerValue, opponentDefense, opponentProtectDefense, currstr, currdex, currcon) {
-    let { avgAtk, avgDuration, avgDam } = calcPassive(skillId, skillAutoData);
+    let { avgAtk, avgDuration, avgDam , avgHitRate} = calcPassive(skillId, skillAutoData);
     let damageRate = parseFloat(skillData.skills[skillId].damRate);
     let panelAttack = calculatePanelAttack(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, powerValue);
     let skillAttackAbility = 0;
@@ -345,6 +349,25 @@ function categorizeSkillsByMethod(skills) {
     return categorizedSkills;
 }
 
+function calHitRate(skillId, dodgeValue, parryLv, parryFactor, enemyExp, prepSkillLevel, characterExp, effectiveArmStrength) {
+    let { avgAtk, avgDuration, avgDam , avgHitRate} = calcPassive(skillId, skillAutoData);
+    let hitRate = 0;
+    let dodgeRate = 0;
+    let parryRate = 0; 
+    let parryValue = 0;
+    let battleHitRate = 0;
+    hitRate = (prepSkillLevel*15*skillData.skills[skillId].hitRate/100 + 1000 + 0.5*Math.pow(characterExp, 0.5)) * (1+effectiveArmStrength*0.02);
+    hitRate = hitRate * (1+avgHitRate) * (2 / (1+Math.pow(3, (enemyExp-characterExp)/(enemyExp+characterExp))));
+    dodgeRate = Math.floor(dodgeValue*0.7) / (dodgeValue*0.7 +hitRate) 
+    parryValue = (parryLv*15*parryFactor)/200
+    parryRate = Math.floor(parryValue*1.2) / (parryValue*1.2 +hitRate*0.85)
+    battleHitRate = (1-dodgeRate)*(1-parryRate)
+
+    battleHitRate = typeof battleHitRate === 'string' ? parseFloat(battleHitRate) : battleHitRate;
+    avgHitRate = typeof avgHitRate === 'string' ? parseFloat(avgHitRate) : avgHitRate;
+    return { battleHitRate, avgHitRate };
+}
+
 document.getElementById('calcForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const prepSkillLevel = parseFloat(document.getElementById('prepSkillLevel').value) || 0;
@@ -360,39 +383,35 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
     const effectivecon = parseFloat(document.getElementById('effectiveCon').value) || 0;
     const protect = parseFloat(document.getElementById('protect').value) || 0;
     const opponentDefense = parseFloat(document.getElementById('opponentDefense').value) || 0;
-
+    const dodgeValue = parseFloat(document.getElementById('dodgeValue').value) || 0;
+    const parryLv = parseFloat(document.getElementById('parryLv').value) || 0;
+    const parryFactor = parseFloat(document.getElementById('parryFactor').value) || 0;
+    const enemyExp = parseFloat(document.getElementById('enemyExp').value) || 0;
 
     let results = [];
     Object.keys(skillData.skills).forEach(skillId => {
         const passiveSkills = skillAutoData[skillId];
         if (passiveSkills) {
-            let { averageQixueDamage, 
-                averageQixueMaxDamage, 
-                panelAttack, 
-                avgAtk, 
-                avgDuration, 
-                avgDam,
-                atkSpeed, 
-                dps,
-                addTrueDam,
-                dam, 
-                addSpeedRate,
-                addPanelAtk, 
-                findAtkFactor,
-                weaponName
+            let { averageQixueDamage, averageQixueMaxDamage, 
+                panelAttack, avgAtk, 
+                avgDuration,  avgDam,
+                atkSpeed,  dps,
+                addTrueDam,dam, 
+                addSpeedRate, addPanelAtk, 
+                findAtkFactor,weaponName
             } = calculateAverageQixueDamage(
-                skillId, 
-                prepSkillLevel, 
-                maxNeili, 
-                characterExp, 
-                effectiveArmStrength, 
-                powerValue, 
-                opponentDefense, 
-                protect, 
-                currstr, 
-                currdex, 
-                currcon
+                skillId, prepSkillLevel, 
+                maxNeili,  characterExp, 
+                effectiveArmStrength, powerValue, 
+                opponentDefense,  protect, currstr, 
+                currdex,  currcon
             );
+            let {battleHitRate, avgHitRate} = calHitRate(
+                skillId, dodgeValue, 
+                parryLv, parryFactor, 
+                enemyExp, prepSkillLevel, 
+                characterExp, effectiveArmStrength);
+            dps = dps * battleHitRate;
             results.push({
                 skillId: skillId,
                 name: skillData.skills[skillId].name 
@@ -405,7 +424,9 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
                 avgAtk: avgAtk.toFixed(2),
                 avgDuration: avgDuration.toFixed(2),
                 avgDam : avgDam.toFixed(2),
+                avgHitRate: avgHitRate.toFixed(2),
                 atkSpeed: atkSpeed.toFixed(2),
+                battleHitRate: battleHitRate.toFixed(2),
                 dps: dps.toFixed(2),
                 addTrueDam: addTrueDam.toFixed(2),
                 dam: dam.toFixed(2),
@@ -476,8 +497,10 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
             '面板攻击',
             '均攻击系数',
             '前后摇',
-            '招均伤害力',
+            '均伤害力',
+            '均命中率',
             '攻速',
+            '命中率',
             '秒伤',
             '神兵',
         ];
@@ -530,10 +553,18 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
             const avgDamCell = document.createElement('td');
             avgDamCell.textContent = result.avgDam;
             row.appendChild(avgDamCell);
+            // '均命中率',
+            const avgHitRateCell = document.createElement('td');
+            avgHitRateCell.textContent = result.avgHitRate;
+            row.appendChild(avgHitRateCell);
             // '攻速',
             const atkSpeedCell = document.createElement('td');
             atkSpeedCell.textContent = (parseFloat(result.atkSpeed) + parseFloat(result.addSpeedRate)).toFixed(2);
             row.appendChild(atkSpeedCell);
+            // 命中率
+            const battleHitRateCell = document.createElement('td');
+            battleHitRateCell.textContent = result.battleHitRate;
+            row.appendChild(battleHitRateCell);
             // '秒伤',
             const dpsCell = document.createElement('td');
             dpsCell.textContent = result.dps;
