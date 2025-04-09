@@ -116,6 +116,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
     let weaponName  = 0;
     let SBWight = 0;
     // 计算神兵
+    
     let maxDpsInfo = null; // 存储最大 DPS 及其关联数据
     if (skillData.skills[skillId].weapontype) {
         let weapontype = String(skillData.skills[skillId].weapontype).includes(',') 
@@ -216,7 +217,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
     addPanelAtk = typeof addPanelAtk === 'string' ? parseFloat(addPanelAtk) : addPanelAtk;
     findAtkFactor = typeof findAtkFactor === 'string' ? parseFloat(findAtkFactor) : findAtkFactor;
     SBWight = typeof SBWight === 'string' ? parseFloat(SBWight) : SBWight;
-    return { averageQixueDamage, 
+    const atkData = { averageQixueDamage, 
         averageQixueMaxDamage, 
         panelAttack, 
         avgAtk, 
@@ -230,8 +231,9 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
         addPanelAtk, 
         findAtkFactor,
         weaponName,
-        SBWight
-    };
+       SBWight
+    }
+    return atkData;
 }
 function calSBAttr(SBname, currstr, currdex, currcon, atkSpeed, effectiveArmStrength) {
     let addTrueDam = 0;
@@ -412,7 +414,8 @@ function calHitRate(skillId, dodgeValue, parryLv, parryFactor, enemyExp, prepSki
 
     battleHitRate = typeof battleHitRate === 'string' ? parseFloat(battleHitRate) : battleHitRate;
     avgHitRate = typeof avgHitRate === 'string' ? parseFloat(avgHitRate) : avgHitRate;
-    return { battleHitRate, avgHitRate };
+    let hitData = { battleHitRate, avgHitRate };
+    return hitData;
 }
 
 document.getElementById('calcForm').addEventListener('submit', function(event) {
@@ -439,49 +442,51 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
     Object.keys(skillData.skills).forEach(skillId => {
         const passiveSkills = skillAutoData[skillId];
         if (passiveSkills) {
-            let { averageQixueDamage, averageQixueMaxDamage, 
-                panelAttack, avgAtk, 
-                avgDuration,  avgDam,
-                atkSpeed,  dps,
-                addTrueDam,dam, 
-                addSpeedRate, addPanelAtk, 
-                findAtkFactor,weaponName, SBWight
-            } = calculateAverageQixueDamage(
+            let atkData = calculateAverageQixueDamage(
                 skillId, prepSkillLevel, 
                 maxNeili,  characterExp, 
                 effectiveArmStrength, powerValue, 
                 opponentDefense,  protect, currstr, 
                 currdex,  currcon
             );
-            let {battleHitRate, avgHitRate} = calHitRate(
+            
+            let hitData = calHitRate(
                 skillId, dodgeValue, 
                 parryLv, parryFactor, 
                 enemyExp, prepSkillLevel, 
-                characterExp, effectiveArmStrength);
-            dps = dps * battleHitRate;
+                characterExp, effectiveArmStrength
+            );
+
+            atkData.dps = atkData.dps * hitData.battleHitRate;
+            
+            // NaN处理，只需考虑排序的两个变量
+            // 使用Number.isNaN() 而不是isNaN()
+            atkData.averageQixueDamage = Number.isNaN(atkData.averageQixueDamage) ? 0 : atkData.averageQixueDamage;
+            atkData.dps = Number.isNaN(atkData.dps) ? 0 : atkData.dps;
+            
             results.push({
                 skillId: skillId,
                 name: skillData.skills[skillId].name 
                     ? `${skillData.skills[skillId].name} ${skillId.match(/\d+/)?.[0] || ''}`
                     : `${skillId}${skillId.match(/\d+/)?.[0] || ''}`,
                 methods: skillData.skills[skillId].methods,
-                averageQixueDamage: averageQixueDamage.toFixed(3),
-                averageQixueMaxDamage : averageQixueMaxDamage.toFixed(3),
-                panelAttack: panelAttack.toFixed(3),
-                avgAtk: avgAtk.toFixed(3),
-                avgDuration: avgDuration.toFixed(3),
-                avgDam : avgDam.toFixed(3),
-                avgHitRate: avgHitRate.toFixed(3),
-                atkSpeed: atkSpeed.toFixed(3),
-                battleHitRate: battleHitRate.toFixed(3),
-                dps: dps.toFixed(3),
-                addTrueDam: addTrueDam.toFixed(3),
-                dam: dam.toFixed(3),
-                addSpeedRate: addSpeedRate.toFixed(3),
-                addPanelAtk: addPanelAtk.toFixed(3),
-                findAtkFactor: findAtkFactor.toFixed(3),
-                weaponName: weaponName,
-                SBWight: SBWight.toFixed(3),
+                averageQixueDamage: atkData.averageQixueDamage.toFixed(3),
+                averageQixueMaxDamage : atkData.averageQixueMaxDamage.toFixed(3),
+                panelAttack: atkData.panelAttack.toFixed(3),
+                avgAtk: atkData.avgAtk.toFixed(3),
+                avgDuration: atkData.avgDuration.toFixed(3),
+                avgDam : atkData.avgDam.toFixed(3),
+                avgHitRate: hitData.avgHitRate.toFixed(3),
+                atkSpeed: atkData.atkSpeed.toFixed(3),
+                battleHitRate: hitData.battleHitRate.toFixed(3),
+                dps: atkData.dps.toFixed(3),
+                addTrueDam: atkData.addTrueDam.toFixed(3),
+                dam: atkData.dam.toFixed(3),
+                addSpeedRate: atkData.addSpeedRate.toFixed(3),
+                addPanelAtk: atkData.addPanelAtk.toFixed(3),
+                findAtkFactor: atkData.findAtkFactor.toFixed(3),
+                weaponName: atkData.weaponName,
+                SBWight: atkData.SBWight.toFixed(3),
             });
         }
     });
