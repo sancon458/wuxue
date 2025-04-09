@@ -114,9 +114,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
     let addPanelAtk = 0;
     let findAtkFactor = 0;
     let weaponName  = 0;
-    if (skillId ==='daojianguizhen') {
-        console.log('刀剑归真');
-    }
+    let SBWight = 0;
     // 计算神兵
     let maxDpsInfo = null; // 存储最大 DPS 及其关联数据
     if (skillData.skills[skillId].weapontype) {
@@ -126,7 +124,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
         weapontype.forEach((weapontypeId) => {
             const weaponName = getWeapontype(weapontypeId);
             atkSpeed = 3 / avgDuration;
-            const { addTrueDam, dam, addSpeedRate, addPanelAtk, findAtkFactor } = calSBAttr(weaponName, currstr, currdex, currcon, atkSpeed);
+            const { addTrueDam, dam, addSpeedRate, addPanelAtk, findAtkFactor, SBWight } = calSBAttr(weaponName, currstr, currdex, currcon, atkSpeed, effectiveArmStrength);
             
             // 计算神兵附加面板
             finalPanelAttack = panelAttack+addPanelAtk;
@@ -142,6 +140,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
             const currentWeapon = {
                 weapontypeId,
                 weaponName,
+                SBWight : parseFloat(SBWight),
                 addTrueDam : parseFloat(addTrueDam), // 确保数值类型
                 dam : parseFloat(dam),
                 addSpeedRate : parseFloat(addSpeedRate), // 确保数值类型
@@ -178,6 +177,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
         addPanelAtk = maxDpsInfo.addPanelAtk;
         findAtkFactor = maxDpsInfo.findAtkFactor;
         weaponName = maxDpsInfo.weaponName;
+        SBWight = maxDpsInfo.SBWight;
     }
     else {
         skillAttackAbility = 8 * (damageRate + (panelAttack * (1 + avgAtk) * damageRate) / 1000);
@@ -199,6 +199,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
         addPanelAtk = 0;
         findAtkFactor = 0;
         weaponName = '无';
+        SBWight = 0;
     }
 
     averageQixueDamage = typeof averageQixueDamage === 'string' ? parseFloat(averageQixueDamage) : averageQixueDamage;
@@ -214,7 +215,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
     addSpeedRate = typeof addSpeedRate === 'string' ? parseFloat(addSpeedRate) : addSpeedRate;
     addPanelAtk = typeof addPanelAtk === 'string' ? parseFloat(addPanelAtk) : addPanelAtk;
     findAtkFactor = typeof findAtkFactor === 'string' ? parseFloat(findAtkFactor) : findAtkFactor;
-
+    SBWight = typeof SBWight === 'string' ? parseFloat(SBWight) : SBWight;
     return { averageQixueDamage, 
         averageQixueMaxDamage, 
         panelAttack, 
@@ -228,20 +229,50 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
         addSpeedRate,
         addPanelAtk, 
         findAtkFactor,
-        weaponName
+        weaponName,
+        SBWight
     };
 }
-function calSBAttr(SBname, currstr, currdex, currcon, atkSpeed) {
+function calSBAttr(SBname, currstr, currdex, currcon, atkSpeed, effectiveArmStrength) {
     let addTrueDam = 0;
     let dam = 460;
-    let addSpeedRate = 0.2;
+    let addSpeedRate = 0;
     let addPanelAtk = 0;
     let CN=300;
     let findAtkFactor = 0;
 
+    // 有效臂力<=重量/2	-重量/100	-0.2
+    // 重量/2<有效臂力<=重量	-重量/200	-0.15
+    // 重量<有效臂力<=重量*2	-重量/100	-0.1
+    // 2*重量<有效臂力<=5*重量	-重量/100	-0.05
+    // 5*重量<有效臂力<=10*重量	0	0
+    // 有效臂力>10*重量	重量/50	0.2
+    // 有效臂力=先天臂力+后天臂力/2		
+
+    let SBWight = getSBWeight(SBname);
+    if (effectiveArmStrength > 10*SBWight) {
+        addSpeedRate = 0.2;
+    }
+    else if (effectiveArmStrength > 5*SBWight) {
+        addSpeedRate = 0;
+    }
+    else if (effectiveArmStrength > 2*SBWight) {
+        addSpeedRate = -0.05;
+    }
+    else if (effectiveArmStrength > SBWight) {
+        addSpeedRate = -0.1;
+    }
+    else if (effectiveArmStrength > SBWight/2) {
+        addSpeedRate = -0.15;
+    }
+    else {
+        addSpeedRate = -0.2;
+    }
+
     // 次数 = 4秒*攻速
     // 触发期望 = 触发概率 * 次数
     // 期望 = 触发值 * 触发期望，最大不超过加速值本身
+
     switch(SBname) {
         case '长剑':
             addPanelAtk = parseFloat(currstr*9+7*CN+100);
@@ -293,28 +324,43 @@ function calSBAttr(SBname, currstr, currdex, currcon, atkSpeed) {
             findAtkFactor = Math.min(((4 * atkSpeed) * (1/3)) * 0.2, 0.2);
             break;
         case '长鞭':
+            findAtkFactor = Math.min(((4 * atkSpeed) * (1/3)) * 0.15, 0.15);
             break;
         case '软鞭':
             break;
         case '九节鞭':
+            addPanelAtk = Math.floor(CN*14+currstr*5+2000);
+            addTrueDam = parseFloat(currstr*0.35+currdex*0.32+72+CN*0.7);
             break;
         case '杆子鞭':
+            addTrueDam = parseFloat(currstr*0.2+currdex*0.48+100+CN/5);
             break;
         case '链枷':
             break;
         case '锥形暗器':
+            addTrueDam = parseFloat(135*0.53+100*0.15+80+CN*0.4)
             break;
         case '圆形暗器':
+            dam += Math.floor(135*0.05+100*0.05+0.6*CN+10)
             break;
         case '针形暗器':
             break;
         case '双环':
+            addSpeedRate += parseFloat((currdex+10+CN*0.4)/2400);
+            addSpeedRate = Math.min(((4 * atkSpeed) * 0.25) * addSpeedRate, addSpeedRate);
+            findAtkFactor = Math.min(((4 * atkSpeed) * (1/3)) * 0.18, 0.18);
             break;
         case '对剑':
+            addTrueDam = parseFloat(currstr*0.2+currdex*0.48+100+CN/5);
             break;
         case '双钩':
+            dam += 113;
+            addPanelAtk = Math.floor(currstr*19+14*CN+80);
             break;
         case '古琴':
+            addSpeedRate += parseFloat((currdex+10+CN*0.4)/2400);
+            addSpeedRate = Math.min(((4 * atkSpeed) * 0.25) * addSpeedRate, addSpeedRate);
+            dam += Math.floor(currstr*0.1+CN*0.8+30);
             break;
         case '笛子':
             break;
@@ -326,7 +372,8 @@ function calSBAttr(SBname, currstr, currdex, currcon, atkSpeed) {
     addSpeedRate = typeof addSpeedRate === 'string' ? parseFloat(addSpeedRate) : addSpeedRate;
     addPanelAtk = typeof addPanelAtk === 'string' ? parseFloat(addPanelAtk) : addPanelAtk;
     findAtkFactor = typeof findAtkFactor === 'string' ? parseFloat(findAtkFactor) : findAtkFactor;
-    return { addTrueDam, dam, addSpeedRate, addPanelAtk, findAtkFactor};
+    SBWight = typeof SBWight === 'string' ? parseFloat(SBWight) : SBWight;
+    return { addTrueDam, dam, addSpeedRate, addPanelAtk, findAtkFactor, SBWight};
 }
 
 function categorizeSkillsByMethod(skills) {
@@ -398,7 +445,7 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
                 atkSpeed,  dps,
                 addTrueDam,dam, 
                 addSpeedRate, addPanelAtk, 
-                findAtkFactor,weaponName
+                findAtkFactor,weaponName, SBWight
             } = calculateAverageQixueDamage(
                 skillId, prepSkillLevel, 
                 maxNeili,  characterExp, 
@@ -418,22 +465,23 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
                     ? `${skillData.skills[skillId].name} ${skillId.match(/\d+/)?.[0] || ''}`
                     : `${skillId}${skillId.match(/\d+/)?.[0] || ''}`,
                 methods: skillData.skills[skillId].methods,
-                averageQixueDamage: averageQixueDamage.toFixed(2),
-                averageQixueMaxDamage : averageQixueMaxDamage.toFixed(2),
-                panelAttack: panelAttack.toFixed(2),
-                avgAtk: avgAtk.toFixed(2),
-                avgDuration: avgDuration.toFixed(2),
-                avgDam : avgDam.toFixed(2),
-                avgHitRate: avgHitRate.toFixed(2),
-                atkSpeed: atkSpeed.toFixed(2),
-                battleHitRate: battleHitRate.toFixed(2),
-                dps: dps.toFixed(2),
-                addTrueDam: addTrueDam.toFixed(2),
-                dam: dam.toFixed(2),
-                addSpeedRate: addSpeedRate.toFixed(2),
-                addPanelAtk: addPanelAtk.toFixed(2),
-                findAtkFactor: findAtkFactor.toFixed(2),
-                weaponName: weaponName
+                averageQixueDamage: averageQixueDamage.toFixed(3),
+                averageQixueMaxDamage : averageQixueMaxDamage.toFixed(3),
+                panelAttack: panelAttack.toFixed(3),
+                avgAtk: avgAtk.toFixed(3),
+                avgDuration: avgDuration.toFixed(3),
+                avgDam : avgDam.toFixed(3),
+                avgHitRate: avgHitRate.toFixed(3),
+                atkSpeed: atkSpeed.toFixed(3),
+                battleHitRate: battleHitRate.toFixed(3),
+                dps: dps.toFixed(3),
+                addTrueDam: addTrueDam.toFixed(3),
+                dam: dam.toFixed(3),
+                addSpeedRate: addSpeedRate.toFixed(3),
+                addPanelAtk: addPanelAtk.toFixed(3),
+                findAtkFactor: findAtkFactor.toFixed(3),
+                weaponName: weaponName,
+                SBWight: SBWight.toFixed(3),
             });
         }
     });
@@ -559,7 +607,7 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
             row.appendChild(avgHitRateCell);
             // '攻速',
             const atkSpeedCell = document.createElement('td');
-            atkSpeedCell.textContent = (parseFloat(result.atkSpeed) + parseFloat(result.addSpeedRate)).toFixed(2);
+            atkSpeedCell.textContent = (parseFloat(result.atkSpeed) + parseFloat(result.addSpeedRate)).toFixed(3);
             row.appendChild(atkSpeedCell);
             // 命中率
             const battleHitRateCell = document.createElement('td');
@@ -578,11 +626,12 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
 
             // 检查每个值是否为0，如果不为0则添加到数组中
             if (result.weaponName !== '无') sbInfo.push(`神兵名 ${result.weaponName}`);
-            if (result.addTrueDam !== '0.00') sbInfo.push(`附伤 ${result.addTrueDam}`);
-            if (result.dam !== '0.00') sbInfo.push(`伤害力 ${result.dam }`);
-            if (result.addPanelAtk !== '0.00') sbInfo.push(`面板攻击 ${result.addPanelAtk}`);
-            if (result.addSpeedRate !== '0.00') sbInfo.push(`期望加速 ${result.addSpeedRate}`);
-            if (result.findAtkFactor !== '0.00') sbInfo.push(`折算加攻 ${result.findAtkFactor}`);
+            if (result.SBWight !== '0.000') sbInfo.push(`神兵重 ${result.SBWight}`);
+            if (result.addTrueDam !== '0.000') sbInfo.push(`附伤 ${result.addTrueDam}`);
+            if (result.dam !== '0.000') sbInfo.push(`伤害力 ${result.dam }`);
+            if (result.addPanelAtk !== '0.000') sbInfo.push(`面板攻击 ${result.addPanelAtk}`);
+            if (result.addSpeedRate !== '0.000') sbInfo.push(`期望加速 ${result.addSpeedRate}`);
+            if (result.findAtkFactor !== '0.000') sbInfo.push(`折算加攻 ${result.findAtkFactor}`);
             // 将数组中的信息用换行符连接成一个字符串
             sbInfoCell.textContent = sbInfo.join('\n');
             sbInfoCell.style.whiteSpace = 'pre-line'; // 添加这一行
@@ -614,7 +663,7 @@ async function init() {
 }
 
 function getWeapontype(weapontypeId) {
-    const elementname = {
+    const weapontype = {
         "jianfa1": "长剑",
         "jianfa2": "短剑",
         "jianfa3": "软剑",
@@ -644,7 +693,7 @@ function getWeapontype(weapontypeId) {
         "qinfa1" : "古琴",
         "qinfa2" : "笛子"
     };
-    return elementname[weapontypeId] || weapontypeId;
+    return weapontype[weapontypeId] || weapontypeId;
 }
 function getMethodName(methodId) {
     const methodNames = {
@@ -661,6 +710,40 @@ function getMethodName(methodId) {
         "11": "乐器"
     };
     return methodNames[methodId] || methodId;
+}
+
+function getSBWeight(SBname) {
+    const names = {
+        "长剑": 21,
+        "短剑": 15,
+        "软剑": 15,
+        "重剑": 22.26,
+        "刺剑": 15,
+        "长刀": 21.22,
+        "短刀": 15,
+        "弯刀": 20,
+        "大环刀": 45,
+        "双刃斧": 22,
+        "长棍": 50,
+        "长枪": 45,
+        "三节棍": 21,
+        "狼牙棒": 60,
+        "战戟": 50,
+        "长鞭": 20,
+        "软鞭": 12,
+        "九节鞭": 40,
+        "杆子鞭": 21,
+        "链枷": 45,
+        "锥形暗器": 15,
+        "圆形暗器": 15,
+        "针形暗器": 15,
+        "双环": 25,
+        "对剑": 40,
+        "双钩": 21,
+        "古琴": 21,
+        "笛子": 21
+    };
+    return names[SBname] || 9999; // 默认值为9999
 }
 
 init();
