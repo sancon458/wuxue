@@ -548,10 +548,10 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
             '气血攻击',
             '气血上限攻击',
             '面板攻击',
-            '均攻击系数',
+            '招均攻击系数',
             '前后摇',
-            '均伤害力',
-            '均命中率',
+            '招均伤害力',
+            '招均命中率',
             '攻速',
             '命中率',
             '秒伤',
@@ -612,7 +612,7 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
             row.appendChild(avgHitRateCell);
             // '攻速',
             const atkSpeedCell = document.createElement('td');
-            atkSpeedCell.textContent = (parseFloat(result.atkSpeed) + parseFloat(result.addSpeedRate)).toFixed(3);
+            atkSpeedCell.textContent =result.atkSpeed;
             row.appendChild(atkSpeedCell);
             // 命中率
             const battleHitRateCell = document.createElement('td');
