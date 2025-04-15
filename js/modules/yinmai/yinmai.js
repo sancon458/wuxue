@@ -264,7 +264,7 @@ function createMindItemElement(mindItem, mindItemKey) {
                     delete gridItem.dataset.linkId;
                 }
                 // 删除属性元素
-                gridItem.querySelectorAll('.highlight-property, .highlight-special').forEach(el => el.remove());
+                gridItem.querySelectorAll('.highlight-property, .highlight-special, .highlight-unlock-conditions').forEach(el => el.remove());
                 
                 // 清空总属性
                 const totalContainer = gridItem.closest('.col-md-12').querySelector('.total-attributes');
@@ -311,6 +311,7 @@ function createMeridianLinkModal(xltype, xlclass, grooveElement) {
                                         <strong>${link.name}</strong>
                                     </div>
                                     <div class="ps-3">
+                                        <p class="mb-1 small">解锁条件: ${link.Unlocktext}</p>
                                         <p class="mb-1 small">属性加成: ${formatProperties(link.property)}</p>
                                         ${link.specialproperty.length > 0 ? 
                                             `<p class="mb-1 small">特殊加成: ${formatProperties(link.specialproperty)}</p>` : ''}
@@ -318,8 +319,8 @@ function createMeridianLinkModal(xltype, xlclass, grooveElement) {
                                     <div class="text-end mt-2">
                                         <button class="btn btn-primary btn-sm select-link" 
                                             data-link-id="${link.id}"
-                                            ${isLinkEquipped(link.id, grooveElement) ? 'disabled' : ''}>
-                                            ${grooveElement.dataset.linkId === link.id ? '重新装备' : '装备'}
+                                            ${grooveElement.dataset.linkId ? 'disabled' : ''}>
+                                            ${grooveElement.dataset.linkId ? '先卸下' : '装备'}
                                         </button>
                                     </div>
                                 </li>
@@ -388,7 +389,7 @@ function createMeridianLinkModal(xltype, xlclass, grooveElement) {
                 const selectedLink = meridianLinkConfig[linkId];
                 if (selectedLink) {
                     // 删除旧的属性加成和特殊加成元素
-                    const existingProperties = grooveElement.querySelectorAll('.highlight-property, .highlight-special');
+                    const existingProperties = grooveElement.querySelectorAll('.highlight-property, .highlight-special, .highlight-unlock-conditions');
                     existingProperties.forEach(el => el.remove());
 
                     // 创建新的属性加成元素
@@ -401,14 +402,21 @@ function createMeridianLinkModal(xltype, xlclass, grooveElement) {
                     specialElement.className = 'highlight-special';
                     specialElement.textContent = `特殊加成: ${selectedLink.specialproperty.map(prop => `${getElementName(prop[2])}${getElementName(prop[1]) == 'defDamageClass' ? '防御' : '伤害'}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}`;
 
+                    // 解锁条件
+                    const unlockConditionsElement = document.createElement('p');
+                    unlockConditionsElement.className = 'highlight-unlock-conditions';
+                    unlockConditionsElement.textContent = `解锁条件: ${selectedLink.Unlocktext}`;
+
                     // 插入新元素（保持原有逻辑）
                     const lastChild = grooveElement.lastElementChild;
                     if (lastChild) {
-                        grooveElement.insertBefore(propertyElement, lastChild.nextSibling);
+                        grooveElement.insertBefore(unlockConditionsElement, lastChild.nextSibling);
                         grooveElement.insertBefore(specialElement, lastChild.nextSibling);
+                        grooveElement.insertBefore(propertyElement, lastChild.nextSibling);
                     } else {
-                        grooveElement.appendChild(propertyElement);
+                        grooveElement.appendChild(unlockConditionsElement);
                         grooveElement.appendChild(specialElement);
+                        grooveElement.appendChild(propertyElement);
                     }
 
                      // 存储玄络数据到DOM元素

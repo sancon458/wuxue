@@ -337,6 +337,13 @@ pre {
     border-radius: 4px;
     margin-top: 10px;
 }
+.highlight-unlock-conditions {
+    background-color: #8be79137; /* 浅粉色背景 */
+    font-weight: bold; /* 加粗字体 */
+    padding: 5px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
 
 /* 新增样式以美化显示按钮 */
 .show-link-btn {
