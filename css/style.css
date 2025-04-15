@@ -321,3 +321,139 @@ pre {
     line-height: 0;
     vertical-align: middle;
 }
+
+.highlight-property {
+    background-color: #e6f7ff; /* 浅蓝色背景 */
+    font-weight: bold; /* 加粗字体 */
+    padding: 5px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.highlight-special {
+    background-color: #fff0f6; /* 浅粉色背景 */
+    font-weight: bold; /* 加粗字体 */
+    padding: 5px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+/* 新增样式以美化显示按钮 */
+.show-link-btn {
+    background-color: #007bff; /* 蓝色背景 */
+    color: white; /* 白色文字 */
+    border: none; /* 去掉边框 */
+    padding: 5px 10px; /* 内边距 */
+    border-radius: 4px; /* 圆角 */
+    cursor: pointer; /* 鼠标悬停时显示手型 */
+    transition: background-color 0.3s ease; /* 平滑过渡效果 */
+}
+
+.show-link-btn:hover {
+    background-color: #0056b3; /* 鼠标悬停时颜色变深 */
+}
+/* 九宫格布局 */
+.meridian-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.grid-item {
+    position: relative;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    transition: transform 0.2s;
+    background: white;
+}
+
+.grid-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* 序号标识 */
+.grid-order-badge {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background: #6c757d;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .meridian-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .meridian-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 内容元素样式 */
+.resource-wrapper {
+    margin: 10px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.resource-item {
+    background: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.time-wrapper {
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+.button-wrapper {
+    margin-top: 15px;
+    text-align: center;
+}
+
+/* 标签样式 */
+.badge {
+    margin-right: 5px;
+    font-weight: normal;
+}
+/* 前置条件样式 */
+.precondition-wrapper {
+    margin-top: 12px;
+    border-top: 1px dashed #eee;
+    padding-top: 8px;
+}
+
+.precondition-title {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.precondition-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.precondition-item {
+    font-size: 0.85em;
+    padding: 3px 8px;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 10px;
+}

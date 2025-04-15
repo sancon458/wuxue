@@ -121,7 +121,7 @@ function createMindItemElement(mindItem, mindItemKey) {
     const mindItemElement = document.createElement('div');
     mindItemElement.className = 'col-md-12 mb-3';
 
-    // Extract the number from mindItemKey to display as 玄络图X
+    // 标题和基础信息部分（保持原样）
     const idNumber = mindItemKey.match(/\d+/)[0];
     const nameElement = document.createElement('h5');
     nameElement.textContent = `玄络图${idNumber} - ${mindItem.name}`;
@@ -139,51 +139,218 @@ function createMindItemElement(mindItem, mindItemKey) {
     timeElement.textContent = `破境时间: ${formatTime(mindItem.time)}`;
     mindItemElement.appendChild(timeElement);
 
+    // 总属性容器（保持原样）
+    const totalAttributeContainer = document.createElement('div');
+    totalAttributeContainer.className = 'total-attributes mb-3';
+    totalAttributeContainer.innerHTML = '<h6>总属性</h6>';
+    mindItemElement.appendChild(totalAttributeContainer);
+
+    // 创建九宫格容器
+    const gridContainer = document.createElement('div');
+    gridContainer.className = 'meridian-grid'; // 通过CSS定义网格布局
+    mindItemElement.appendChild(gridContainer);
+
+    // 生成网格项
     for (let i = 1; i <= 14; i++) {
         const groove = mindItem[`groove${i}`];
         const precondition = mindItem[`precondition${i}`];
-        if (groove) {
-            const grooveElement = document.createElement('div');
-            grooveElement.className = 'meridian-link'; // 添加新的样式类
+        if (!groove) continue;
 
-            const grooveInfo = acupointConfig[groove];
-            if (grooveInfo) {
-                const grooveNameElement = document.createElement('h6');
-                grooveNameElement.textContent = `窍关${i}: ${grooveInfo.name}`;
-                grooveElement.appendChild(grooveNameElement);
+        const gridItem = document.createElement('div');
+        gridItem.className = 'grid-item';
 
-                const grooveTypeElement = document.createElement('p');
-                grooveTypeElement.textContent = `类型: ${grooveInfo.type === 1 ? '参伐' : grooveInfo.type === 2 ? '守御' : '共贯'}`;
-                grooveElement.appendChild(grooveTypeElement);
+        // 添加序号标识
+        const orderBadge = document.createElement('span');
+        orderBadge.className = 'grid-order-badge';
+        orderBadge.textContent = i;
+        gridItem.appendChild(orderBadge);
 
-                const grooveClassElement = document.createElement('p');
-                grooveClassElement.textContent = `等级: ${grooveInfo.class === 1 ? '正基' : grooveInfo.class === 2 ? '中丹' : '通元'}`;
-                grooveElement.appendChild(grooveClassElement);
+        // 内容部分（保持原有逻辑）
+        const grooveInfo = acupointConfig[groove];
+        if (grooveInfo) {
+            const grooveNameElement = document.createElement('h6');
+            grooveNameElement.textContent = `窍关${i}: ${grooveInfo.name}`;
+            gridItem.appendChild(grooveNameElement);
 
-                const grooveResourceElement = document.createElement('p');
-                grooveResourceElement.textContent = `资源: ${grooveInfo.resource.length > 0 ? grooveInfo.resource.map(resource => `${getResourceName(resource[0])}: ${resource[1]}`).join(', ') : '无'}`;
-                grooveElement.appendChild(grooveResourceElement);
+            // 类型标签
+            const typeTag = document.createElement('span');
+            typeTag.className = `badge ${getTypeClass(grooveInfo.type)}`;
+            typeTag.textContent = grooveInfo.type === 1 ? '参伐' : grooveInfo.type === 2 ? '守御' : '共贯';
+            gridItem.appendChild(typeTag);
 
-                const grooveTimeElement = document.createElement('p');
-                grooveTimeElement.textContent = `冲脉时间: ${formatTime(grooveInfo.time)}`;
-                grooveElement.appendChild(grooveTimeElement);
-            } else {
-                const grooveNameElement = document.createElement('h6');
-                grooveNameElement.textContent = `窍关${i}: ${groove}`;
-                grooveElement.appendChild(grooveNameElement);
-            }
+            // 等级标签
+            const classTag = document.createElement('span');
+            classTag.className = `badge ${getClassClass(grooveInfo.class)}`;
+            classTag.textContent = grooveInfo.class === 1 ? '正基' : grooveInfo.class === 2 ? '中丹' : '通元';
+            gridItem.appendChild(classTag);
 
+            // 资源信息
+            const resourceWrapper = document.createElement('div');
+            resourceWrapper.className = 'resource-wrapper';
+            grooveInfo.resource.forEach(resource => {
+                const resourceItem = document.createElement('span');
+                resourceItem.className = 'resource-item';
+                resourceItem.innerHTML = `<i class="bi-coin"></i>${getResourceName(resource[0])}×${resource[1]}`;
+                resourceWrapper.appendChild(resourceItem);
+            });
+            gridItem.appendChild(resourceWrapper);
+
+            // 时间信息
+            const timeWrapper = document.createElement('div');
+            timeWrapper.className = 'time-wrapper';
+            timeWrapper.innerHTML = `<i class="bi-clock-history"></i>${formatTime(grooveInfo.time)}`;
+            gridItem.appendChild(timeWrapper);
+
+            // 前置条件（直接展示）
             if (precondition.length > 0) {
-                const preconditionElement = document.createElement('p');
-                preconditionElement.textContent = `前置条件: ${precondition.join(', ')}`;
-                grooveElement.appendChild(preconditionElement);
+                const preconditionWrapper = document.createElement('div');
+                preconditionWrapper.className = 'precondition-wrapper mt-2';
+                
+                const title = document.createElement('div');
+                title.className = 'precondition-title text-muted small';
+                title.textContent = '前置要求：';
+                preconditionWrapper.appendChild(title);
+
+                const content = document.createElement('div');
+                content.className = 'precondition-content';
+                content.innerHTML = precondition.map(p => `
+                    <span class="precondition-item badge bg-light text-dark border me-1">${p}</span>
+                `).join('');
+                preconditionWrapper.appendChild(content);
+
+                gridItem.appendChild(preconditionWrapper);
             }
 
-            mindItemElement.appendChild(grooveElement);
+            // 在 createMindItemElement 的按钮部分修改如下
+            const buttonWrapper = document.createElement('div');
+            buttonWrapper.className = 'button-wrapper d-flex justify-content-between align-items-center';
+
+            // 装备按钮
+            const installButton = document.createElement('button');
+            installButton.className = 'btn btn-primary btn-sm';
+            installButton.innerHTML = '<i class="bi-magic"></i> 装备玄络';
+            installButton.addEventListener('click', () => {
+                const modal = createMeridianLinkModal(grooveInfo.type, grooveInfo.class, gridItem);
+                document.body.appendChild(modal);
+            });
+
+            // 卸下按钮
+            const uninstallButton = document.createElement('button');
+            uninstallButton.className = 'btn btn-outline-danger btn-sm';
+            uninstallButton.innerHTML = '<i class="bi-trash"></i> 卸下';
+            // uninstallButton.style.display = 'none'; // 初始隐藏
+            uninstallButton.addEventListener('click', () => {
+                // 删除属性元素
+                gridItem.querySelectorAll('.highlight-property, .highlight-special').forEach(el => el.remove());
+                
+                // 清空总属性
+                const totalContainer = gridItem.closest('.col-md-12').querySelector('.total-attributes');
+                totalContainer.innerHTML = '<h6>总属性</h6>';
+
+            });
+
+            buttonWrapper.appendChild(installButton);
+            buttonWrapper.appendChild(uninstallButton);
+            gridItem.appendChild(buttonWrapper);
+
         }
+
+        gridContainer.appendChild(gridItem);
     }
 
     return mindItemElement;
+}
+
+// 新增样式辅助函数
+function getTypeClass(type) {
+    return {
+        1: 'bg-danger',
+        2: 'bg-primary',
+        3: 'bg-success'
+    }[type] || 'bg-secondary';
+}
+
+function getClassClass(linkClass) {
+    return {
+        1: 'bg-warning text-dark',
+        2: 'bg-info text-dark',
+        3: 'bg-dark'
+    }[linkClass] || 'bg-secondary';
+}
+
+// 修改 createMeridianLinkModal 函数以更新总属性
+function createMeridianLinkModal(xltype, xlclass, grooveElement) {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.tabIndex = '-1';
+    modal.innerHTML = `
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">选择玄络</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        ${Object.values(meridianLinkConfig)
+                            .filter(link => link.type === xltype && link.class === xlclass)
+                            .map(link => `
+                                <li class="list-group-item">
+                                    <strong>${link.name}</strong>
+                                    <p>属性加成: ${link.property.map(prop => `${getElementName(prop[2])}${getElementName(prop[1]) == 'defDamageClass' ? '防御' : '伤害'}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}</p>
+                                    <p>特殊加成: ${link.specialproperty.map(prop => `${getElementName(prop[2])}${getElementName(prop[1]) == 'defDamageClass' ? '防御' : '伤害'}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}</p>
+                                    <button class="btn btn-primary select-link" data-link-id="${link.id}">装备</button>
+                                </li>
+                            `).join('')}
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 使用 Bootstrap 的 showModal 方法显示模态框
+    const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.show();
+
+    // 延迟绑定事件，确保 DOM 元素已加载
+    modal.addEventListener('shown.bs.modal', () => {
+        modal.querySelectorAll('.select-link').forEach(button => {
+            button.addEventListener('click', () => {
+                const linkId = button.dataset.linkId;
+                const selectedLink = meridianLinkConfig[linkId];
+                if (selectedLink) {
+                    // 删除旧的属性加成和特殊加成元素
+                    const existingProperties = grooveElement.querySelectorAll('.highlight-property, .highlight-special');
+                    existingProperties.forEach(el => el.remove());
+
+                    // 创建新的属性加成元素
+                    const propertyElement = document.createElement('p');
+                    propertyElement.className = 'highlight-property';
+                    propertyElement.textContent = `属性加成: ${selectedLink.property.map(prop => `${getElementName(prop[2])}${getElementName(prop[1]) == 'defDamageClass' ? '防御' : '伤害'}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}`;
+
+                    // 创建新的特殊加成元素
+                    const specialElement = document.createElement('p');
+                    specialElement.className = 'highlight-special';
+                    specialElement.textContent = `特殊加成: ${selectedLink.specialproperty.map(prop => `${getElementName(prop[2])}${getElementName(prop[1]) == 'defDamageClass' ? '防御' : '伤害'}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}`;
+
+                    // 插入新元素（保持原有逻辑）
+                    const lastChild = grooveElement.lastElementChild;
+                    if (lastChild) {
+                        grooveElement.insertBefore(propertyElement, lastChild.nextSibling);
+                        grooveElement.insertBefore(specialElement, lastChild.nextSibling);
+                    } else {
+                        grooveElement.appendChild(propertyElement);
+                        grooveElement.appendChild(specialElement);
+                    }
+                }
+            });
+        });
+    });
+
+    return modal;
 }
 
 function getResourceName(resourceKey) {
