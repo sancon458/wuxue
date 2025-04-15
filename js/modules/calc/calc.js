@@ -441,6 +441,7 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
                     ? `${skillData.skills[skillId].name} ${skillId.match(/\d+/)?.[0] || ''}`
                     : `${skillId}${skillId.match(/\d+/)?.[0] || ''}`,
                 methods: skillData.skills[skillId].methods,
+                element : getElementName(skillData.skills[skillId].zhaoJiaDefDamageClass),
                 averageQixueDamage: parseFloat(atkData[0].averageQixueDamage.toFixed(3)),
                 averageQixueMaxDamage : parseFloat(atkData[0].averageQixueMaxDamage.toFixed(3)),
                 panelAttack: parseFloat(atkData[0].panelAttack.toFixed(3)),
@@ -517,6 +518,7 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
         const headers = [
             '排位',
             '武学',
+            '属性',
             '气血攻击',
             '气血上限攻击',
             '面板攻击',
@@ -555,6 +557,10 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
             const nameCell = document.createElement('td');
             nameCell.textContent = result.name;
             row.appendChild(nameCell);
+            // '属性',
+            const elementCell = document.createElement('td');
+            elementCell.textContent = result.element;
+            row.appendChild(elementCell);
             // '平均气血',
             const averageQixueDamageCell = document.createElement('td');
             averageQixueDamageCell.textContent = result.averageQixueDamage;
@@ -742,6 +748,17 @@ function getSBWeight(SBname) {
         "笛子": 21
     };
     return names[SBname] || 9999; // 默认值为9999
+}
+
+export function getElementName(elementId) {
+    const elementname = {
+        "1": "无性",
+        "3": "阳性",
+        "5": "阴性",
+        "7": "混元",
+        "9": "外功"
+    };
+    return elementname[elementId] || elementId;
 }
 
 init();
