@@ -81,6 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add event listener to dropdown items
         dropdownMenu.addEventListener('click', (event) => {
+            totalAttributes = {};
+            refreshTotalDisplay();
             if (event.target && event.target.matches('a.dropdown-item')) {
                 const mindItemKey = event.target.dataset.mindItemKey;
                 const mindItem = meridianMap[mindItemKey];
@@ -420,14 +422,6 @@ function createMeridianLinkModal(xltype, xlclass, grooveElement) {
 
     return modal;
 }
-
-// 在切换玄络图时重置状态
-document.querySelectorAll('.dropdown-item').forEach(item => {
-    item.addEventListener('click', () => {
-        totalAttributes = {};
-        refreshTotalDisplay();
-    });
-});
 
 function isConflict(prop, linkData) {
     return linkData.property.some(p => 
