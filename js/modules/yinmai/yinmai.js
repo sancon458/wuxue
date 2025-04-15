@@ -105,6 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
         showMeridianLinkButton.className = 'btn btn-secondary ms-2';
         showMeridianLinkButton.textContent = '展示玄络';
         showMeridianLinkButton.addEventListener('click', () => {
+            // 在展示玄络按钮点击时重置
+            totalAttributes = {};
+            refreshTotalDisplay();
             meridianMapContainer.innerHTML = ''; // Clear previous content
             document.getElementById('meridianLinkTabs').classList.remove('d-none'); // Show tabs
             const meridianLinkElement = createMeridianLinkElement();
@@ -116,6 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(error => console.error('Error loading JSON files:', error));
 });
+let totalAttributes = {}; // {属性键: 累计值}
 
 function createMindItemElement(mindItem, mindItemKey) {
     const mindItemElement = document.createElement('div');
@@ -240,6 +244,23 @@ function createMindItemElement(mindItem, mindItemKey) {
             uninstallButton.innerHTML = '<i class="bi-trash"></i> 卸下';
             // uninstallButton.style.display = 'none'; // 初始隐藏
             uninstallButton.addEventListener('click', () => {
+                if (gridItem.dataset.linkId) {
+                    const linkData = meridianLinkConfig[gridItem.dataset.linkId];
+                    updateTotalAttributes('remove', linkData);
+                    delete gridItem.dataset.linkId;
+                    
+                    // 显示即时反馈
+                    uninstallButton.innerHTML = '<i class="bi-check2"></i> 已卸下';
+                    setTimeout(() => {
+                        uninstallButton.innerHTML = '<i class="bi-trash"></i> 卸下';
+                    }, 1000);
+                }
+                const linkId = gridItem.dataset.linkId;
+                if (linkId) {
+                    const linkData = meridianLinkConfig[linkId];
+                    updateTotalAttributes('remove', linkData);
+                    delete gridItem.dataset.linkId;
+                }
                 // 删除属性元素
                 gridItem.querySelectorAll('.highlight-property, .highlight-special').forEach(el => el.remove());
                 
@@ -261,22 +282,6 @@ function createMindItemElement(mindItem, mindItemKey) {
     return mindItemElement;
 }
 
-// 新增样式辅助函数
-function getTypeClass(type) {
-    return {
-        1: 'bg-danger',
-        2: 'bg-primary',
-        3: 'bg-success'
-    }[type] || 'bg-secondary';
-}
-
-function getClassClass(linkClass) {
-    return {
-        1: 'bg-warning text-dark',
-        2: 'bg-info text-dark',
-        3: 'bg-dark'
-    }[linkClass] || 'bg-secondary';
-}
 
 // 修改 createMeridianLinkModal 函数以更新总属性
 function createMeridianLinkModal(xltype, xlclass, grooveElement) {
@@ -293,23 +298,81 @@ function createMeridianLinkModal(xltype, xlclass, grooveElement) {
                 <div class="modal-body">
                     <ul class="list-group">
                         ${Object.values(meridianLinkConfig)
-                            .filter(link => link.type === xltype && link.class === xlclass)
+                            .filter(link => link.type === xltype && link.class <= xlclass)
                             .map(link => `
-                                <li class="list-group-item">
-                                    <strong>${link.name}</strong>
-                                    <p>属性加成: ${link.property.map(prop => `${getElementName(prop[2])}${getElementName(prop[1]) == 'defDamageClass' ? '防御' : '伤害'}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}</p>
-                                    <p>特殊加成: ${link.specialproperty.map(prop => `${getElementName(prop[2])}${getElementName(prop[1]) == 'defDamageClass' ? '防御' : '伤害'}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}</p>
-                                    <button class="btn btn-primary select-link" data-link-id="${link.id}">装备</button>
+                                <li class="list-group-item ${isLinkEquipped(link.id, grooveElement) ? 'disabled' : ''}">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <span class="badge ${getTypeClass(link.type)} me-1">${link.type === 1 ? '参伐' : link.type === 2 ? '守御' : '共贯'}</span>
+                                            <span class="badge ${getClassClass(link.class)}">${link.class === 1 ? '正基' : link.class === 2 ? '中丹' : '通元'}</span>
+                                        </div>
+                                        <strong>${link.name}</strong>
+                                    </div>
+                                    <div class="ps-3">
+                                        <p class="mb-1 small">属性加成: ${formatProperties(link.property)}</p>
+                                        ${link.specialproperty.length > 0 ? 
+                                            `<p class="mb-1 small">特殊加成: ${formatProperties(link.specialproperty)}</p>` : ''}
+                                    </div>
+                                    <div class="text-end mt-2">
+                                        <button class="btn btn-primary btn-sm select-link" 
+                                            data-link-id="${link.id}"
+                                            ${isLinkEquipped(link.id, grooveElement) ? 'disabled' : ''}>
+                                            ${grooveElement.dataset.linkId === link.id ? '重新装备' : '装备'}
+                                        </button>
+                                    </div>
                                 </li>
                             `).join('')}
                     </ul>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-                </div>
             </div>
         </div>
     `;
+
+    // 新增辅助函数：检查玄络是否已被装备
+    function isLinkEquipped(linkId, currentGroove) {
+        const gridContainer = currentGroove.closest('.meridian-grid');
+        return Array.from(gridContainer.querySelectorAll('.grid-item'))
+            .filter(item => item !== currentGroove) // 排除当前窍关
+            .some(item => item.dataset.linkId === linkId);
+    }
+
+    // 新增辅助函数：格式化属性显示
+    function formatProperties(properties) {
+        return properties.map(prop => {
+            const element = getElementName(prop[2]);
+            const type = getElementName(prop[1]) === 'defDamageClass' ? '防御' : '伤害';
+            return `${element}${type}: ${Number(prop[3] * 100).toFixed(2)}%`;
+        }).join(', ');
+    }
+
+    // 修改装备事件处理
+    modal.addEventListener('click', (event) => {
+        if (event.target.closest('.select-link')) {
+            const button = event.target.closest('.select-link');
+            const linkId = button.dataset.linkId;
+            
+            // 再次验证是否可用
+            if (button.disabled) return;
+
+            // 移除旧玄络的占用
+            if (grooveElement.dataset.linkId) {
+                const prevLink = meridianLinkConfig[grooveElement.dataset.linkId];
+                updateTotalAttributes('remove', prevLink);
+            }
+
+            // 设置新玄络
+            const selectedLink = meridianLinkConfig[linkId];
+            grooveElement.dataset.linkId = linkId;
+            updateTotalAttributes('add', selectedLink);
+
+            // 更新按钮状态
+            button.textContent = '已装备';
+            button.disabled = true;
+            
+            // 关闭模态框（3秒后）
+            setTimeout(() => bootstrap.Modal.getInstance(modal).hide(), 1000);
+        }
+    });
 
     // 使用 Bootstrap 的 showModal 方法显示模态框
     const bootstrapModal = new bootstrap.Modal(modal);
@@ -345,12 +408,102 @@ function createMeridianLinkModal(xltype, xlclass, grooveElement) {
                         grooveElement.appendChild(propertyElement);
                         grooveElement.appendChild(specialElement);
                     }
+
+                     // 存储玄络数据到DOM元素
+                    grooveElement.dataset.linkId = linkId;
+                     // 更新总属性
+                    updateTotalAttributes('add', selectedLink);
                 }
             });
         });
     });
 
     return modal;
+}
+
+// 在切换玄络图时重置状态
+document.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', () => {
+        totalAttributes = {};
+        refreshTotalDisplay();
+    });
+});
+
+function isConflict(prop, linkData) {
+    return linkData.property.some(p => 
+        p[1] === prop[1] && // 属性类型相同
+        p[2] === prop[2] && // 元素类型相同
+        p[3] * prop[3] < 0  // 增益方向相反
+    );
+}
+
+// 新增属性更新方法
+function updateTotalAttributes(operation, linkData) {
+    const modifier = operation === 'add' ? 1 : -1;
+    
+    if (operation === 'add' && 
+        Object.values(meridianLinkConfig)
+            .filter(l => l.id !== linkData.id)
+            .some(l => l.property.some(p => isConflict(p, linkData)))
+    ) {
+        alert('存在冲突属性，无法装备！');
+        return;
+    }
+
+    // 处理常规属性
+    linkData.property.forEach(prop => {
+        const [_, propType, elementId, value] = prop;
+        const key = `${propType}_${elementId}`;
+        totalAttributes[key] = (totalAttributes[key] || 0) + value * modifier;
+    });
+
+    // 处理特殊属性
+    linkData.specialproperty.forEach(prop => {
+        const [_, propType, elementId, value] = prop;
+        const key = `${propType}_${elementId}`;
+        totalAttributes[key] = (totalAttributes[key] || 0) + value * modifier;
+    });
+
+    // 立即更新显示
+    refreshTotalDisplay();
+}
+
+// 新增属性显示刷新方法
+function refreshTotalDisplay() {
+    const container = document.querySelector('.total-attributes');
+    if (!container) return;
+
+    container.innerHTML = '<h6>总属性</h6>';
+    
+    Object.entries(totalAttributes).forEach(([key, value]) => {
+        if (value <= 0) return;
+        
+        const [propType, elementId] = key.split('_');
+        const element = document.createElement('p');
+        element.className = 'highlight-special';
+        element.textContent = `${getElementName(elementId)}${
+            getElementName(propType) === 'defDamageClass' ? '防御' : '伤害'
+        }: ${(value * 100).toFixed(2)}%`;
+        
+        container.appendChild(element);
+    });
+}
+
+// 新增样式辅助函数
+function getTypeClass(type) {
+    return {
+        1: 'bg-danger',
+        2: 'bg-primary',
+        3: 'bg-success'
+    }[type] || 'bg-secondary';
+}
+
+function getClassClass(linkClass) {
+    return {
+        1: 'bg-warning text-dark',
+        2: 'bg-info text-dark',
+        3: 'bg-dark'
+    }[linkClass] || 'bg-secondary';
 }
 
 function getResourceName(resourceKey) {

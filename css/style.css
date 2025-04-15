@@ -457,3 +457,42 @@ pre {
     border: 1px solid #dee2e6 !important;
     border-radius: 10px;
 }
+/* 按钮过渡效果 */
+.btn {
+    transition: all 0.3s ease;
+}
+
+/* 卸下按钮悬停效果 */
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: white !important;
+}
+
+/* 按钮容器间距 */
+.button-wrapper {
+    margin-top: 15px;
+    gap: 8px;
+}
+/* 禁用状态样式 */
+.list-group-item.disabled {
+    opacity: 0.6;
+    background-color: #f8f9fa;
+}
+.list-group-item.disabled .btn {
+    pointer-events: none;
+}
+
+/* 按钮状态反馈 */
+.btn[disabled] {
+    cursor: not-allowed;
+}
+
+/* 即时反馈动画 */
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.instant-feedback {
+    animation: fadeOut 1s ease-out forwards;
+}
