@@ -267,8 +267,8 @@ function createMindItemElement(mindItem, mindItemKey) {
                 gridItem.querySelectorAll('.highlight-property, .highlight-special, .highlight-unlock-conditions').forEach(el => el.remove());
                 
                 // 清空总属性
-                const totalContainer = gridItem.closest('.col-md-12').querySelector('.total-attributes');
-                totalContainer.innerHTML = '<h6>总属性</h6>';
+                // const totalContainer = gridItem.closest('.col-md-12').querySelector('.total-attributes');
+                // totalContainer.innerHTML = '<h6>总属性</h6>';
 
             });
 
