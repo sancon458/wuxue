@@ -182,9 +182,9 @@ export function showPassiveSkills(skillId, skillAutoData) {
 }
 
 // 显示主动技能信息
-export function showActiveSkills(skillId, activeSkillData) {
+export function showActiveSkills(skillId, activeSkillData, name) {
     const container = document.getElementById('activeSkillsList');
-    const skillGroups = findActiveSkills(skillId, activeSkillData);
+    const skillGroups = findActiveSkills(skillId, activeSkillData, name);
     
     if (skillGroups.length === 0) {
         container.innerHTML = '<div class="alert alert-info">该武学没有关联的主动技能。</div>';
@@ -194,7 +194,7 @@ export function showActiveSkills(skillId, activeSkillData) {
     let html = '';
     
     skillGroups.forEach((group, groupIndex) => {
-        const {skillId, baseSkill, allSkills} = group;
+        const {activeId, baseActive, allActives, name} = group;
         
         if (groupIndex > 0) {
             html += '<hr class="my-4">';
@@ -202,22 +202,23 @@ export function showActiveSkills(skillId, activeSkillData) {
         
         html += `
         <div class="mb-3">
-            <h4 class="text-primary">${baseSkill.name || skillId}</h4>
+            <h4 class="text-primary">${baseActive.name || activeId}</h4>
         </div>`;
         
         html += `
         <div class="mb-4">
             <h5>技能基础数据</h5>
-            <pre style="max-height: 200px; overflow-y: auto;">${JSON.stringify(baseSkill, null, 2)}</pre>
+            <pre style="max-height: 200px; overflow-y: auto;">${JSON.stringify(baseActive, null, 2)}</pre>
         </div>`;
 
         // 根据技能ID格式筛选第一重和第十重
-        const selectedSkills = allSkills.filter(skill => {
-            const skillId = skill.id;
-            const isLevel1 = /^[a-zA-Z]+$/.test(skillId);
-            const isLevel10 = /^[a-zA-Z]+10$/.test(skillId);
-            return isLevel1 || isLevel10;
-        });
+        // const selectedSkills = allActives.filter(skill => {
+        //     const activeId = skill.id;
+        //     const isLevel1 = /^[a-zA-Z]+$/.test(activeId);
+        //     const isLevel10 = /^[a-zA-Z]+10$/.test(activeId);
+        //     return isLevel1 || isLevel10;
+        // });
+        const selectedSkills = allActives;
 
         if (selectedSkills.length > 1) {
             html += `
@@ -237,10 +238,10 @@ export function showActiveSkills(skillId, activeSkillData) {
                     const useTypeKey = `use_type_${i}`;
                     const useValueKey = `use_value_${i}`;
                     if (selectedSkills[0].data[useIdKey] && selectedSkills[0].data[useTypeKey] && selectedSkills[0].data[useValueKey]) {
-                        const boundSkillId = selectedSkills[0].data[useIdKey].split(' or ');
+                        const boundactiveId = selectedSkills[0].data[useIdKey].split(' or ');
                         const boundMethodId = selectedSkills[0].data[useValueKey];
                         if (boundMethodId == "是") {
-                            boundSkillId.forEach((id) => {
+                            boundactiveId.forEach((id) => {
                                 const boundSkillName = skillData.skills[id] ?.name ?? id;
 
                                 html += `
@@ -250,7 +251,7 @@ export function showActiveSkills(skillId, activeSkillData) {
                             });
                         }
                         else {
-                            boundSkillId.forEach((id) => {
+                            boundactiveId.forEach((id) => {
                                 const boundSkillName = skillData.skills[id] ?.name ?? id;
 
                                 html += `
@@ -260,6 +261,14 @@ export function showActiveSkills(skillId, activeSkillData) {
                             });
                         }
                     }
+                    
+                }
+                // 主动准备位置条件
+                if (selectedSkills[0].data['methods']) {
+                    html += `
+                        <tr>
+                            <td> <strong>准备 ${name} 为 ${getMethodName(selectedSkills[0].data['methods'])}</td>
+                        </tr>`;
                 }
              html += `
                         </tbody>
@@ -279,24 +288,26 @@ export function showActiveSkills(skillId, activeSkillData) {
                         <tbody>`;
 
             selectedSkills.forEach((skill, index) => {
-                const skillText = Object.entries(skill.data)
-                    .filter(([key, value]) => ['desc', 'pvpcd', 'cost', 'effects'].includes(key))
-                    .map(([key, value]) => {
-                        if (key === 'effects') {
-                            return `${key}: ${createEffectLinks(value)}`;
-                        }
-                        return `${key}: ${value}`;
-                    })
-                    .join('<br>');
+                if (index <= 9) {
+                    const skillText = Object.entries(skill.data)
+                        .filter(([key, value]) => ['desc', 'pvpcd', 'cost', 'effects'].includes(key))
+                        .map(([key, value]) => {
+                            if (key === 'effects') {
+                                return `${key}: ${createEffectLinks(value)}`;
+                            }
+                            return `${key}: ${value}`;
+                        })
+                        .join('<br>');
 
-                
-                if (skillText) {
-                    html += `
-                    <tr>
-                        <td>第${skill.level}重</td>
-                        <td>${skillText}</td>
-                    </tr>`;
-                }
+                    
+                    if (skillText) {
+                        html += `
+                        <tr>
+                            <td>第${skill.level}重</td>
+                            <td>${skillText}</td>
+                        </tr>`;
+                    }
+                };
             });
 
             html += `
@@ -350,7 +361,7 @@ export function updateSkillList(skillData, matchesFilters) {
                     console.log('Loading active skill data for skill:', id);
                     const activeSkillData = await import('./dataLoader.js').then(module => module.loadActiveSkillData());
                     console.log('Loaded activeSkillData:', activeSkillData ? 'success' : 'null');
-                    showActiveSkills(id, activeSkillData);
+                    showActiveSkills(id, activeSkillData, skill.name);
                     
                     // 加载被动技能数据
                     const skillAutoData = await import('./dataLoader.js').then(module => module.loadSkillAutoData());

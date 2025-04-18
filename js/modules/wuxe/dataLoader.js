@@ -150,7 +150,7 @@ export function getWeapontype(weapontypeId) {
 }
 
 // 查找关联的主动技能
-export function findActiveSkills(skillId, activeSkillData) {
+export function findActiveSkills(skillId, activeSkillDat, name) {
     if (!activeSkillData || !activeSkillData.skillRelation) return [];
 
     const relatedSkillGroups = [];
@@ -175,9 +175,10 @@ export function findActiveSkills(skillId, activeSkillData) {
             }
             
             relatedSkillGroups.push({
-                skillId: baseSkillId,
-                baseSkill: baseSkill,
-                allSkills: skills
+                activeId: baseSkillId,
+                baseActive: baseSkill,
+                allActives: skills,
+                name: name
             });
         }
     }
