@@ -548,3 +548,10 @@ pre {
         margin-bottom: 1.5rem;
     }
 }
+.table td {
+    vertical-align: middle !important; /* 垂直居中 */
+}
+
+.table-hover tbody tr:hover {
+    --bs-table-hover-bg: rgba(13,110,253,0.05); /* 浅蓝色悬停背景 */
+}

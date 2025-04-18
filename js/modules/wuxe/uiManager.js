@@ -172,8 +172,3 @@ export function matchesFilters(skill) {
 
     return searchMatch && familyMatch && juexueMatch && zhishiMatch && elementMatch && methodsMatch;
 }
-
-// 更新统计信息
-export function updateStats(filteredCount, totalCount) {
-
-}

@@ -472,6 +472,4 @@ export function updateSkillList(skillData, matchesFilters) {
             container.appendChild(col);
         }
     });
-
-    return { filteredCount, totalCount };
 }

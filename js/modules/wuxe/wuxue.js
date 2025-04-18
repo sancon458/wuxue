@@ -1,6 +1,6 @@
 // 主文件
 import { loadSkillData, loadSkillAutoData, getUniqueValues } from './dataLoader.js';
-import { initModals, createFilterBadges, clearFilters, matchesFilters, updateStats, toggleFilter } from './uiManager.js'; // 确保导入 toggleFilter 函数
+import { initModals, createFilterBadges, clearFilters, matchesFilters, toggleFilter } from './uiManager.js'; // 确保导入 toggleFilter 函数
 import { updateSkillList } from './skillDisplay.js';
 
 // 导出 skillData
@@ -32,19 +32,24 @@ async function initializePage() {
         
         // 添加搜索监听器
         document.getElementById('searchInput').addEventListener('input', () => {
-            const { filteredCount, totalCount } = updateSkillList(skillData, matchesFilters);
-            updateStats(filteredCount, totalCount);
+            updateSkillList(skillData, matchesFilters);
         });
         
+        // 检查URL参数并自动搜索
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('q');
+        if (query) {
+            document.getElementById('searchInput').value = query;
+            updateSkillList(skillData, matchesFilters);
+        }
+
         // 初始显示技能列表
-        const { filteredCount, totalCount } = updateSkillList(skillData, matchesFilters);
-        updateStats(filteredCount, totalCount);
+        updateSkillList(skillData, matchesFilters);
         
         // 添加清除过滤器的事件处理
         window.clearFilters = (filterType) => {
             clearFilters(filterType);
-            const { filteredCount, totalCount } = updateSkillList(skillData, matchesFilters);
-            updateStats(filteredCount, totalCount);
+            updateSkillList(skillData, matchesFilters);
         };
     } catch (error) {
         console.error('Error initializing page:', error);

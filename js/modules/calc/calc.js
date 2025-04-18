@@ -563,11 +563,42 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
             
             // '排位',
             const ranlCell = document.createElement('td');
+            
             ranlCell.textContent = count;
             row.appendChild(ranlCell);
             // '武学',
             const nameCell = document.createElement('td');
-            nameCell.textContent = result.name;
+            const link = document.createElement('a');
+            // 添加Bootstrap链接样式和自定义类
+            link.className = 'text-decoration-none link-primary badge rounded-pill'; 
+            link.style.cssText = `
+            font-size: 0.95rem;
+            color: var(--bs-primary);
+            transition: all 0.2s ease;
+            underline-offset: 0.2em;
+            text-underline-offset: 0.2em;
+            text-decoration-color: rgba(13,110,253,0.3);
+            `;
+            link.style.transition = 'all 0.2s ease';
+            link.style.border = '1px solid rgba(13,110,253,0.25)';
+            link.href = `/index.html?q=${result.name}`;
+            link.setAttribute('target', '_blank');
+            link.textContent = result.name;
+            // 悬停状态增强
+            link.addEventListener('mouseenter', function() {
+                this.style.textDecoration = 'underline solid';
+                this.style.color = 'var(--bs-primary-dark)';
+                this.style.textDecorationColor = 'var(--bs-primary)';
+            });
+
+            link.addEventListener('mouseleave', function() {
+                this.style.textDecoration = 'underline dotted';
+                this.style.color = 'var(--bs-primary)';
+                this.style.textDecorationColor = 'rgba(13,110,253,0.3)';
+            });
+            // 响应式调整
+            nameCell.className = 'py-2'; // 增加单元格内边距
+            nameCell.appendChild(link);
             row.appendChild(nameCell);
             // '属性',
             const elementCell = document.createElement('td');
