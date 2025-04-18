@@ -412,6 +412,16 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
     const enemyExp = parseFloat(document.getElementById('enemyExp').value) || 0;
     const wxAtkSpeedFactor = parseFloat(document.getElementById('wxAtkSpeedFactor').value) || 0;
 
+    // 数据清洗
+    Object.keys(skillData.skills).forEach(skillId => {
+        if (needDeleteSkill(skillId)) {
+            delete skillData.skills[skillId];
+        }
+        else if (skillData.skills[skillId].familyList !== undefined && needDeleteFamly(skillData.skills[skillId].familyList)) {
+            delete skillData.skills[skillId];
+        }
+    });
+
     let results = [];
     Object.keys(skillData.skills).forEach(skillId => {
         const passiveSkills = skillAutoData[skillId];
@@ -776,6 +786,55 @@ function getAtkSpeed(avgDuration, effectivedex, wxAtkSpeedFactor, atkSpeedFactor
     let singleAtkTili = (avgDuration * tiliMax) / 3
 
     return (freamPerSecond * findalTiliRestorePerSecond) / singleAtkTili;
+}
+
+function needDeleteSkill(skillId) {
+    const needDeleteId = [
+        "lanyeshenzhang",
+        "duzhuojianfa1",
+        "qingdianzilei1",
+        "tianmozhi1",
+        "mingyugong",
+        "yitianjianfa1",
+        "weijinxinfa",
+        "bawangqiangfa",
+        "baiyuanjianfa1",
+        "wuqituifa",
+        "taixuangong2",
+        "luoyuejianfa1",
+        "lunhuijianfa2",
+        "riyuelun1",
+        "jiangwangguibu",
+        "chunfengkuaiyidaofa1",
+        "duanjinsuigu",
+        "daojianguizhen",
+        "fangshenshu",
+        "weituochu",
+        "taiquan2",
+        "shedaoqigong",
+        "zhoutiangong"
+    ];
+    
+    return needDeleteId.includes(skillId)
+    
+}
+function needDeleteFamly(familyList) {
+    const needDeleteFamly = [
+        "重光教",
+        "侠客岛",
+        "关外胡家",
+        "军队",
+        "动物",
+        "基本",
+        "嵩山",
+        "恒山",
+        "泰山",
+        "白云庵",
+        "红花会",
+        "青城",
+        "飞天御剑流"
+    ];
+    return needDeleteFamly.includes(familyList);
 }
 
 init();
