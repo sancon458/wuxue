@@ -22,6 +22,32 @@
             </div>
         </div>
 
+        <div class="showcase-card mt-4 p-3">
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <a href="static/攻击.jpg" target="_blank"><img src="static/攻击.jpg" alt="系统说明" class="img-fluid rounded-3 showcase-img"></a>
+                    <a href="static/攻速.jpg" target="_blank" ><img src="static/攻速.jpg" alt="系统说明" class="img-fluid rounded-3 showcase-img"></a>
+                    
+                </div>
+               
+                <div class="col-md-7">
+                    <h3 class="showcase-title mb-3">计算说明</h3>
+                    <div class="showcase-text">
+                        <ul class="list-unstyled">
+                            <li>✅ 该排行为打桩排行不考虑技能</li>
+                            <li>✅ 保留最优和次优神兵</li>
+                            <li>✅ 带数字的武学为npc武学</li>
+                            <li>✅ 攻击和攻速计算公式点击左图放大</li>
+                            <li>✅ 请先填写打桩数据和排序方式</li>
+                        </ul>
+                        <div class="alert alert-info mt-2">
+                            <small>数据更新：2025-04-18</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <form id="calcForm" class="form-inline">
             <div class="mb-3 row g-3">
                 <label for="prepSkillLevel" class="col-form-label col-sm-2">准备技能等级</label>
@@ -118,6 +144,12 @@
                 <label for="enemyExp" class="col-form-label col-sm-2">对手经验</label>
                 <div class="col-sm-10">
                     <input type="number" class="form-control" id="enemyExp" required value="600000000">
+                </div>
+            </div>
+            <div class="mb-3 row g-3">
+                <label for="wxAtkSpeedFactor" class="col-form-label col-sm-2">武学攻速系数</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="wxAtkSpeedFactor" required value="105">
                 </div>
             </div>
             <div class="mb-3 row g-3">

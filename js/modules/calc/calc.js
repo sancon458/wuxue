@@ -98,7 +98,7 @@ function calculatePanelAttack(skillId, prepSkillLevel, maxNeili, characterExp, e
     return panelAttack;
 }
 
-function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, powerValue, opponentDefense, opponentProtectDefense, currstr, currdex, currcon) {
+function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, effectivedex, wxAtkSpeedFactor,powerValue, opponentDefense, opponentProtectDefense, currstr, currdex, currcon) {
     let { avgAtk, avgDuration, avgDam , avgHitRate} = calcPassive(skillId, skillAutoData);
     let damageRate = parseFloat(skillData.skills[skillId].damRate);
     let panelAttack = calculatePanelAttack(skillId, prepSkillLevel, maxNeili, characterExp, effectiveArmStrength, powerValue);
@@ -122,7 +122,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
                         ?skillData.skills[skillId].weapontype.split(',')
                         :[skillData.skills[skillId].weapontype]
         weapontype.forEach((weapontypeId) => {
-            const weaponName = getWeapontype(weapontypeId);
+            weaponName = getWeapontype(weapontypeId);
             atkSpeed = 3 / avgDuration;
             const { addTrueDam, dam, addSpeedRate, addPanelAtk, finalAtkFactor, SBWight } = calSBAttr(weaponName, currstr, currdex, currcon, atkSpeed, effectiveArmStrength);
             
@@ -134,7 +134,8 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
             skillAttackAbility = 8 * (damageRate + (finalPanelAttack * (1 + avgAtk) * damageRate) / 1000);
             skillAttackAbility = skillAttackAbility;
             averageQixueDamage = skillAttackAbility * (1000 / (1000 + opponentDefense));
-            dps = (averageQixueMaxDamage+averageQixueDamage+addTrueDam) * (atkSpeed * (1 + addSpeedRate)) * (1 + finalAtkFactor);
+            atkSpeed = getAtkSpeed(avgDuration, effectivedex, wxAtkSpeedFactor, 1+addSpeedRate);
+            dps = (averageQixueMaxDamage+averageQixueDamage+addTrueDam) * atkSpeed * (1 + finalAtkFactor);
         
             // 构建当前武器完整数据对象
             const currentDpsInfo = {
@@ -161,6 +162,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
         
         });
     }
+    
     else {
         skillAttackAbility = 8 * (damageRate + (panelAttack * (1 + avgAtk) * damageRate) / 1000);
         skillAttackAbility = skillAttackAbility;
@@ -168,7 +170,8 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
         averageQixueDamage = skillAttackAbility * (1000 / (1000 + opponentDefense));
         // 平均气血上限伤害
         averageQixueMaxDamage = (avgDam)/(1+opponentProtectDefense/100);
-        atkSpeed = 3 / avgDuration;
+        // atkSpeed = 3 / avgDuration;
+        atkSpeed = getAtkSpeed(avgDuration, effectivedex, wxAtkSpeedFactor, 1)
         dps = (averageQixueMaxDamage+averageQixueDamage) * atkSpeed;
         addTrueDam = 0;
         dam = 0;
@@ -407,6 +410,7 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
     const parryLv = parseFloat(document.getElementById('parryLv').value) || 0;
     const parryFactor = parseFloat(document.getElementById('parryFactor').value) || 0;
     const enemyExp = parseFloat(document.getElementById('enemyExp').value) || 0;
+    const wxAtkSpeedFactor = parseFloat(document.getElementById('wxAtkSpeedFactor').value) || 0;
 
     let results = [];
     Object.keys(skillData.skills).forEach(skillId => {
@@ -415,7 +419,8 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
             let atkData = calculateAverageQixueDamage(
                 skillId, prepSkillLevel, 
                 maxNeili,  characterExp, 
-                effectiveArmStrength, powerValue, 
+                effectiveArmStrength, effectivedex, wxAtkSpeedFactor,
+                powerValue, 
                 opponentDefense,  protect, currstr, 
                 currdex,  currcon
             );
@@ -510,7 +515,6 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
         // 创建表格
         const table = document.createElement('table');
         table.className = 'table table-striped';
-    
 
         // 创建表头
         const thead = document.createElement('thead');
@@ -750,7 +754,7 @@ function getSBWeight(SBname) {
     return names[SBname] || 9999; // 默认值为9999
 }
 
-export function getElementName(elementId) {
+function getElementName(elementId) {
     const elementname = {
         "1": "无性",
         "3": "阳性",
@@ -759,6 +763,19 @@ export function getElementName(elementId) {
         "9": "外功"
     };
     return elementname[elementId] || elementId;
+}
+
+function getAtkSpeed(avgDuration, effectivedex, wxAtkSpeedFactor, atkSpeedFactor) {
+    let tiliMax = 100;
+    let freamPerSecond = 30;
+
+    let baseTiliRestore = Math.min((effectivedex + 550) * (wxAtkSpeedFactor+ 80) / 1140, 150) 
+    let findalTiliRestore = baseTiliRestore * atkSpeedFactor
+
+    let findalTiliRestorePerSecond = findalTiliRestore / 40;
+    let singleAtkTili = (avgDuration * tiliMax) / 3
+
+    return (freamPerSecond * findalTiliRestorePerSecond) / singleAtkTili;
 }
 
 init();

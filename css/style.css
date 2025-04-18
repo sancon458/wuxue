@@ -503,3 +503,48 @@ pre {
 .instant-feedback {
     animation: fadeOut 1s ease-out forwards;
 }
+
+/* 展示框样式 */
+.showcase-card {
+    background: linear-gradient(145deg, #f8f9fa 0%, #ecedee 100%);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+}
+
+.showcase-img {
+    height: 220px;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.showcase-title {
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.showcase-text li {
+    padding-left: 1.5rem;
+    position: relative;
+    margin-bottom: 0.8rem;
+}
+
+.showcase-text li:before {
+    content: "•";
+    color: #3498db;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .showcase-img {
+        height: 180px;
+        margin-bottom: 1.5rem;
+    }
+}
