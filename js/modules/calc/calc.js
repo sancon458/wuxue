@@ -454,7 +454,7 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
                 skillId: skillId,
                 name: skillData.skills[skillId].name,
                 methods: skillData.skills[skillId].methods,
-                element : getElementName(skillData.skills[skillId].zhaoJiaDefDamageClass),
+                element : getElementName(skillData.skills[skillId].autoZhaoAtkDamageClass),
                 averageQixueDamage: parseFloat(atkData[0].averageQixueDamage.toFixed(3)),
                 averageQixueMaxDamage : parseFloat(atkData[0].averageQixueMaxDamage.toFixed(3)),
                 panelAttack: parseFloat(atkData[0].panelAttack.toFixed(3)),
