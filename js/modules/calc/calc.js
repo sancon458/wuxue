@@ -452,9 +452,7 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
             
             results.push({
                 skillId: skillId,
-                name: skillData.skills[skillId].name 
-                    ? `${skillData.skills[skillId].name} ${skillId.match(/\d+/)?.[0] || ''}`
-                    : `${skillId}${skillId.match(/\d+/)?.[0] || ''}`,
+                name: skillData.skills[skillId].name,
                 methods: skillData.skills[skillId].methods,
                 element : getElementName(skillData.skills[skillId].zhaoJiaDefDamageClass),
                 averageQixueDamage: parseFloat(atkData[0].averageQixueDamage.toFixed(3)),
