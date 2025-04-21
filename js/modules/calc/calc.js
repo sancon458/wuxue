@@ -581,7 +581,7 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
             `;
             link.style.transition = 'all 0.2s ease';
             link.style.border = '1px solid rgba(13,110,253,0.25)';
-            link.href = `/index.html?q=${result.name}`;
+            link.href = `index.html?q=${result.name}`;
             link.setAttribute('target', '_blank');
             link.textContent = result.name;
             // 悬停状态增强
