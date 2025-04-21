@@ -260,7 +260,7 @@ function calSBAttr(SBname, currstr, currdex, currcon, atkSpeed, effectiveArmStre
             addSpeedRate = Math.min(((4 * atkSpeed) * 0.25) * addSpeedRate, addSpeedRate);
             break;
         case '重剑':
-            dam += 223;
+            dam += CN*0.6+23;
             break;
         case '刺剑':
             addTrueDam = parseFloat(10+CN*0.1+currstr*0.15+dam*0.5);
