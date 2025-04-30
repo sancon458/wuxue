@@ -116,6 +116,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
     let finalAtkFactor = 0;
     let weaponName  = 0;
     let SBWight = 0;
+    let avgPartFactor = getPartFactor(skillId);
     
     if (skillData.skills[skillId].weapontype) {
         let weapontype = String(skillData.skills[skillId].weapontype).includes(',') 
@@ -133,7 +134,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
             // 重新计算平均气血伤害, 附加伤害直接加到气血伤害上
             skillAttackAbility = 8 * (damageRate + (finalPanelAttack * (1 + avgAtk) * damageRate) / 1000);
             skillAttackAbility = skillAttackAbility;
-            averageQixueDamage = skillAttackAbility * (1000 / (1000 + opponentDefense));
+            averageQixueDamage = skillAttackAbility * (1000 / (1000 + opponentDefense)) * avgPartFactor;
             atkSpeed = getAtkSpeed(avgDuration, effectivedex, wxAtkSpeedFactor, 1+addSpeedRate);
             dps = (averageQixueMaxDamage+averageQixueDamage+addTrueDam) * atkSpeed * (1 + finalAtkFactor);
         
@@ -144,15 +145,16 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
                 avgDuration : parseFloat(avgDuration),
                 avgDam : parseFloat(avgDam),
                 avgHitRate : parseFloat(avgHitRate),
+                avgPartFactor : parseFloat(avgPartFactor),
                 weapontypeId,
                 weaponName,
                 SBWight : parseFloat(SBWight),
-                addTrueDam : parseFloat(addTrueDam), // 确保数值类型
+                addTrueDam : parseFloat(addTrueDam), 
                 dam : parseFloat(dam),
-                addSpeedRate : parseFloat(addSpeedRate), // 确保数值类型
-                addPanelAtk : parseFloat(addPanelAtk), // 确保数值类型
-                finalAtkFactor : parseFloat(finalAtkFactor), // 确保数值类型
-                finalPanelAttack: parseFloat(finalPanelAttack), // 确保数值类型
+                addSpeedRate : parseFloat(addSpeedRate), 
+                addPanelAtk : parseFloat(addPanelAtk), 
+                finalAtkFactor : parseFloat(finalAtkFactor), 
+                finalPanelAttack: parseFloat(finalPanelAttack), 
                 averageQixueMaxDamage: parseFloat(averageQixueMaxDamage),
                 averageQixueDamage : parseFloat(averageQixueDamage),
                 atkSpeed : parseFloat(atkSpeed),
@@ -167,7 +169,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
         skillAttackAbility = 8 * (damageRate + (panelAttack * (1 + avgAtk) * damageRate) / 1000);
         skillAttackAbility = skillAttackAbility;
         // 平均气血伤害
-        averageQixueDamage = skillAttackAbility * (1000 / (1000 + opponentDefense));
+        averageQixueDamage = skillAttackAbility * (1000 / (1000 + opponentDefense)) * avgPartFactor;
         // 平均气血上限伤害
         averageQixueMaxDamage = (avgDam)/(1+opponentProtectDefense/100);
         // atkSpeed = 3 / avgDuration;
@@ -188,15 +190,16 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
             avgDuration : parseFloat(avgDuration),
             avgDam : parseFloat(avgDam),
             avgHitRate : parseFloat(avgHitRate),
+            avgPartFactor : parseFloat(avgPartFactor),
             weapontypeId : '无',
             weaponName : '无',
             SBWight : parseFloat(SBWight),
-            addTrueDam : parseFloat(addTrueDam), // 确保数值类型
+            addTrueDam : parseFloat(addTrueDam), 
             dam : parseFloat(dam),
-            addSpeedRate : parseFloat(addSpeedRate), // 确保数值类型
-            addPanelAtk : parseFloat(addPanelAtk), // 确保数值类型
-            finalAtkFactor : parseFloat(finalAtkFactor), // 确保数值类型
-            finalPanelAttack: parseFloat(finalPanelAttack), // 确保数值类型
+            addSpeedRate : parseFloat(addSpeedRate), 
+            addPanelAtk : parseFloat(addPanelAtk), 
+            finalAtkFactor : parseFloat(finalAtkFactor), 
+            finalPanelAttack: parseFloat(finalPanelAttack), 
             averageQixueMaxDamage: parseFloat(averageQixueMaxDamage),
             averageQixueDamage : parseFloat(averageQixueDamage),
             atkSpeed : parseFloat(atkSpeed),
@@ -465,6 +468,7 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
                 avgDuration: parseFloat(atkData[0].avgDuration.toFixed(3)),
                 avgDam : parseFloat(atkData[0].avgDam.toFixed(3)),
                 avgHitRate: parseFloat(hitData.avgHitRate.toFixed(3)),
+                avgPartFactor: parseFloat(atkData[0].avgPartFactor.toFixed(3)),
                 atkSpeed: parseFloat(atkData[0].atkSpeed.toFixed(3)),
                 battleHitRate: parseFloat(hitData.battleHitRate.toFixed(3)),
                 dps: parseFloat(atkData[0].dps.toFixed(3)),
@@ -541,6 +545,7 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
             '前后摇',
             '招均伤害力',
             '招均命中率',
+            '平均部位系数',
             '攻速',
             '命中率',
             '秒伤',
@@ -635,6 +640,10 @@ document.getElementById('calcForm').addEventListener('submit', function(event) {
             const avgHitRateCell = document.createElement('td');
             avgHitRateCell.textContent = result.avgHitRate;
             row.appendChild(avgHitRateCell);
+            // 部位系数
+            const avgPartFactorCell = document.createElement('td');
+            avgPartFactorCell.textContent = result.avgPartFactor;
+            row.appendChild(avgPartFactorCell);
             // '攻速',
             const atkSpeedCell = document.createElement('td');
             atkSpeedCell.textContent =result.atkSpeed;
@@ -867,6 +876,19 @@ function needDeleteFamly(familyList) {
         "飞天御剑流"
     ];
     return needDeleteFamly.includes(familyList);
+}
+
+function getPartFactor(skillId) {
+    const partFactor = {
+        '通用' : 0.8,
+        'tanzhishentong' : 0.86,
+        'xiaolifeidao' : 0.95,
+        'qinnashou' : 0.8,
+        'lanhuafuxueshou' : 0.86,
+        'heqidao' : 0.8,
+        'yunlongshou' : 0.8833333333333333
+    }
+    return partFactor[skillId] || partFactor['通用'];
 }
 
 init();
