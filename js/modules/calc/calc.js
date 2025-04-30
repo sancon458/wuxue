@@ -130,7 +130,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
             // 计算神兵附加面板
             finalPanelAttack = panelAttack+addPanelAtk;
             // 计算气血上限伤害
-            averageQixueMaxDamage = (dam+avgDam)/(1+opponentProtectDefense/100);
+            averageQixueMaxDamage = (dam+avgDam)/(1+opponentProtectDefense/100) * avgPartFactor;
             // 重新计算平均气血伤害, 附加伤害直接加到气血伤害上
             skillAttackAbility = 8 * (damageRate + (finalPanelAttack * (1 + avgAtk) * damageRate) / 1000);
             skillAttackAbility = skillAttackAbility;
@@ -171,7 +171,7 @@ function calculateAverageQixueDamage(skillId, prepSkillLevel, maxNeili, characte
         // 平均气血伤害
         averageQixueDamage = skillAttackAbility * (1000 / (1000 + opponentDefense)) * avgPartFactor;
         // 平均气血上限伤害
-        averageQixueMaxDamage = (avgDam)/(1+opponentProtectDefense/100);
+        averageQixueMaxDamage = (avgDam)/(1+opponentProtectDefense/100) * avgPartFactor;
         // atkSpeed = 3 / avgDuration;
         atkSpeed = getAtkSpeed(avgDuration, effectivedex, wxAtkSpeedFactor, 1)
         dps = (averageQixueMaxDamage+averageQixueDamage) * atkSpeed;
