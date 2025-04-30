@@ -313,12 +313,15 @@ function calSBAttr(SBname, currstr, currdex, currcon, atkSpeed, effectiveArmStre
         case '链枷':
             break;
         case '锥形暗器':
+            addSpeedRate = 0;
             addTrueDam = parseFloat(135*0.53+100*0.15+80+CN*0.4)
             break;
         case '圆形暗器':
+            addSpeedRate = 0;
             dam += Math.floor(135*0.05+100*0.05+0.6*CN+10)
             break;
         case '针形暗器':
+            addSpeedRate = 0;
             break;
         case '双环':
             addSpeedRate += parseFloat((currdex+10+CN*0.4)/2400);
