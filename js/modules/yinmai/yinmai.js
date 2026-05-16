@@ -594,6 +594,7 @@ function createMeridianLinkElement() {
 
             const specialTextElement = document.createElement('p');
             specialTextElement.textContent = `特殊加成: ${link.specialproperty.map(prop => `${getElementName(prop[2])}${getElementName(prop[1]) == 'defDamageClass' ? '防御' : '伤害'}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}`;
+            // specialTextElement.textContent = `特殊加成: ${link.property.map(prop => getProp(prop)).filter(Boolean).join(',')}`;
             linkElement.appendChild(specialTextElement);
 
             const specialUnlockTextElement = document.createElement('p');
@@ -606,3 +607,20 @@ function createMeridianLinkElement() {
 
     return result;
 }
+
+// function getProp(prop) {
+//     const effectTypeDisplayMap = {
+//         'defDamageClass': '防御',
+//         'activeEffect': '主动增益',  // 添加新的属性类型映射
+//         'anotherProperty': '增益'     // 另一个属性类型示例
+//     };
+//     const elementName = getElementName(prop[2]);
+//     const propertyType = getElementName(prop[1]);
+    
+//     // 从映射中获取显示文本，默认使用"伤害"
+//     const displayText = effectTypeDisplayMap[propertyType] || '伤害';
+//     if (elementName != 0) {
+//         return `${elementName}${displayText}: ${Number(prop[3] * 100).toFixed(2)}%`;
+//     }
+//     return null;
+// }
