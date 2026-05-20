@@ -311,10 +311,14 @@ function createMeridianLinkModal(xltype, xlclass, grooveElement) {
                                         <strong>${link.name}</strong>
                                     </div>
                                     <div class="ps-3">
+                                        <p class="mb-1 small">id: ${link.id}</p>
                                         <p class="mb-1 small">解锁条件: ${link.Unlocktext}</p>
                                         <p class="mb-1 small">属性加成: ${formatProperties(link.property)}</p>
                                         ${link.specialproperty.length > 0 ? 
-                                            `<p class="mb-1 small">特殊加成: ${formatProperties(link.specialproperty)}</p>` : ''}
+                                            `<p class="mb-1 small">特殊属性: ${formatProperties(link.specialproperty)}</p>` : ''}
+                                        
+                                        ${link.specialtext?.length > 0 ? 
+                                        `<p class="mb-1 small">特殊效果: ${link.specialtext}</p>` : ''}
                                     </div>
                                     <div class="text-end mt-2">
                                         <button class="btn btn-primary btn-sm select-link" 
@@ -593,13 +597,18 @@ function createMeridianLinkElement() {
             linkElement.appendChild(propertyElement);
 
             const specialTextElement = document.createElement('p');
-            specialTextElement.textContent = `特殊加成: ${link.specialproperty.map(prop => `${getElementName(prop[2])}${getElementName(prop[1]) == 'defDamageClass' ? '防御' : '伤害'}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}`;
+            specialTextElement.textContent = `特殊属性: ${link.specialproperty.map(prop => `${getElementName(prop[2])}${getElementName(prop[1]) == 'defDamageClass' ? '防御' : '伤害'}: ${Number(prop[3] * 100).toFixed(2)}%`).join(', ')}`;
             // specialTextElement.textContent = `特殊加成: ${link.property.map(prop => getProp(prop)).filter(Boolean).join(',')}`;
             linkElement.appendChild(specialTextElement);
 
             const specialUnlockTextElement = document.createElement('p');
-            specialUnlockTextElement.textContent = `特殊加成解锁条件: ${link.SUnlocktext||""}`;
+            specialUnlockTextElement.textContent = `特殊属性解锁条件: ${link.SUnlocktext||""}`;
             linkElement.appendChild(specialUnlockTextElement);
+
+            // 特殊效果
+            const specialEffectElement = document.createElement('p');
+            specialEffectElement.textContent = `特殊效果: ${link.specialtext || ''}`;
+            linkElement.appendChild(specialEffectElement);
 
             result[category] += linkElement.outerHTML;
         });
